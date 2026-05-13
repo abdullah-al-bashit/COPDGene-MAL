@@ -3,12 +3,9 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# RAW DATA — never commit patient data (PHI / HIPAA)
+# DATA DIRECTORY — contains PHI / HIPAA patient data; never commit
 # -----------------------------------------------------------------------------
-data/csv_exports/
-data/Data/
-data/COPDGene_*.csv
-data/COPDGene_*.xlsx
+data/
 
 # -----------------------------------------------------------------------------
 # GENERATED OUTPUTS — reproducible from source, no need to track
