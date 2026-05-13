@@ -1,4 +1,4 @@
-# COPD Journal — Analysis Project
+# COPDGene Multi-omics: MAL and Emphysema Progression
 
 ## Project Structure
 
