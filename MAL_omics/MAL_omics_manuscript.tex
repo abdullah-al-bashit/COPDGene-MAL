@@ -15,6 +15,8 @@
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{parskip}
+\usepackage{subcaption}
+\graphicspath{{./}}
 
 \setlength{\parskip}{6pt}
 
@@ -103,6 +105,15 @@ SomaScan proteomics $\to$ differential expression $\to$ GSEA / STRING
 $\to$ adaptive LASSO PRS $\to$ emphysema progression association $\to$
 causal mediation.
 
+\begin{figure}[H]
+  \centering
+  \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
+    \textit{[Figure 1 placeholder --- study design schematic to be
+    drawn manually, e.g., BioRender]}
+  \vspace{2cm}}}
+  \caption{Study design schematic.}
+\end{figure}
+
 % =============================================================================
 \section*{Figure 2 --- Protein Expression Landscape of MAL}
 
@@ -128,6 +139,14 @@ grey = not significant. Top 20 by FDR are labelled.
 
 \textbf{Key result.} 45 of 4,979 proteins were significant at FDR $<$
 0.05.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{Figure2A_volcano.pdf}
+  \caption{Volcano plot: differential protein expression with MAL
+    ($n = 4{,}979$ proteins). Red = enriched, blue = depleted at
+    FDR $< 0.05$. Top 20 proteins labelled.}
+\end{figure}
 
 Top enriched (higher with more MAL):
 \textit{ADIPOQ} (Adiponectin, $\beta = 0.27$),
@@ -169,12 +188,25 @@ Reactome  & Antimicrobial Peptides                  & $+1.94$ & 0.032 \\
 energy metabolism and upregulation of chemokine and innate immune
 signalling.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{Figure2B_GSEA.pdf}
+  \caption{GSEA barplot: 9 significant pathways (padj $< 0.05$)
+    faceted by collection. NES $< 0$ = depleted in high-MAL subjects.}
+\end{figure}
+
 \subsection*{C. STRING Network}
 
 \noindent 45 FDR-significant proteins mapped to STRING~v11.5 (human,
-interaction score $\geq 400$). Network image saved as
-\texttt{Figure2C\_STRING\_network.png} and embedded in notebook
-cell~15. No PDF version was generated (only PNG).
+interaction score $\geq 400$). Only PNG available ---
+\texttt{STRINGdb::plot\_network()} does not support PDF output.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.80\textwidth]{Figure2C_STRING_network.png}
+  \caption{STRING protein--protein interaction network for 45
+    FDR-significant proteins (v11.5, score $\geq 400$).}
+\end{figure}
 
 % =============================================================================
 \section*{Figure 3 --- Quartile Plot of Proteomic Risk Score}
@@ -186,6 +218,14 @@ within each quartile, with 95\% CI. Dashed line at zero.
 \textbf{Key result.} Effect sizes across quartiles are small and
 confidence intervals cross zero in all quartiles, consistent with the
 non-significant overall PRS association ($p = 0.079$).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\textwidth]{Figure3_quartile_plot.pdf}
+  \caption{Quartile plot of the Proteomic Risk Score (PRS). Each point
+    is the OLS $\hat\beta$ (HU/SD) for the PRS within that quartile
+    subgroup, with 95\% CI. Dashed line at zero.}
+\end{figure}
 
 % =============================================================================
 \section*{Proteomic Risk Score --- Methods and Results}
@@ -385,13 +425,28 @@ $= -0.6\%$).
 \begin{itemize}
   \item \textbf{Supp Figure A --- Forest plot: proteins $\sim$ MAL.}
     Top 30 FDR-significant proteins, $\hat\beta$ for MAL association
-    with 95\% CI. File: \texttt{MAL\_omics/SuppFig\_forest\_MAL.png}
+    with 95\% CI.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{SuppFig_forest_MAL.pdf}
+  \caption*{Supplementary Figure A. Forest plot of top 30
+    differentially expressed proteins --- association with MAL.}
+\end{figure}
 
   \item \textbf{Supp Figure B --- Forest plot: proteins $\sim$
     emphysema progression.}
-    Same 30 proteins, $\hat\beta$ for progression association with
-    95\% CI (adjusted for baseline lung density and covariates). \\
-    File: \texttt{MAL\_omics/SuppFig\_forest\_progression.png}
+    Same 30 proteins, $\hat\beta$ for progression association
+    (adjusted for baseline lung density and covariates).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{SuppFig_forest_progression.pdf}
+  \caption*{Supplementary Figure B. Forest plot of top 30
+    differentially expressed proteins --- association with emphysema
+    progression.}
+\end{figure}
+
 \end{itemize}
 
 % =============================================================================
