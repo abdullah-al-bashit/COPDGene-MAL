@@ -194,10 +194,30 @@ causal mediation.
 
 \textbf{What we are looking at.}
 A volcano plot shows which proteins in the blood are statistically
-associated with MAL. Each dot is one protein. The further right, the
-more it goes \emph{up} with more MAL. The further left, the more it
-goes \emph{down} with more MAL. The further up the dot sits, the more
-statistically confident we are in that association (lower FDR).
+associated with MAL (Mechanically Affected Lung score, range 0.01--0.40;
+higher = more lung under destructive mechanical stress).
+Each dot is one protein.
+
+\begin{itemize}
+  \item \textbf{$x$-axis ($\hat\beta$):} how much that protein changes
+    per one-unit increase in MAL, after adjusting for age, sex, race,
+    smoking, pack-years, scanner, and ancestry PCs.
+    A \emph{positive} $\hat\beta$ means the protein is \emph{higher}
+    in people with more mechanical lung stress.
+    A \emph{negative} $\hat\beta$ means it is \emph{lower}.
+    MAL ranges from 0.01 to 0.40, so a $\hat\beta$ of 0.27
+    (Adiponectin) means moving across the full MAL range would
+    correspond to a $0.27 \times 0.39 \approx 0.1$ log$_2$-unit
+    change --- a modest but detectable shift.
+  \item \textbf{$y$-axis ($-\log_{10}$ FDR):} confidence.
+    Higher = more significant. Dots above the horizontal threshold
+    (FDR $< 0.05$) are coloured: red = enriched, blue = depleted.
+    Grey dots did not reach significance.
+  \item \textbf{A dot far right and high up} is a protein that is both
+    strongly and reliably elevated in subjects with more MAL.
+  \item \textbf{A dot far left and high up} is a protein that is both
+    strongly and reliably lower in subjects with more MAL.
+\end{itemize}
 
 \textbf{How it was calculated.}
 For each of 4,979 proteins, the model is:
@@ -245,10 +265,31 @@ Top depleted (lower with more MAL):
 Instead of asking ``is this one protein associated with MAL?'', GSEA
 asks: ``does this entire biological \emph{pathway} show a coordinated
 shift with MAL?'' A pathway might have no single dramatically changed
-protein, but if 80\% of its proteins are all slightly higher in
-high-MAL subjects, that is a real biological signal. The barplot shows
-each significant pathway as a bar --- the length is the NES, the
-direction tells you enriched vs.\ depleted.
+protein, but if most of its member proteins are all slightly higher in
+high-MAL subjects, that is a real biological signal.
+
+Each bar in the plot is one significant pathway.
+\begin{itemize}
+  \item \textbf{Bar pointing right (NES $> 0$, enriched):} the
+    pathway's proteins are, on average, \emph{higher} in plasma when
+    MAL is higher. This pathway is more active in people with more
+    mechanically stressed lung.
+  \item \textbf{Bar pointing left (NES $< 0$, depleted):} the
+    pathway's proteins are \emph{lower} in plasma when MAL is higher.
+    This pathway is suppressed in people with more mechanical stress.
+  \item \textbf{Longer bar = stronger shift.} NES of $\pm 2$ is a
+    strong, consistent signal across the gene set.
+  \item \textbf{padj:} how confident we are the shift is real, after
+    correcting for all pathways tested. Only bars with padj $< 0.05$
+    are shown.
+\end{itemize}
+\textbf{What the results mean here:} seven metabolic pathways
+(energy, fat, amino acids) are depleted --- meaning people with more
+MAL have lower levels of proteins involved in normal metabolism. Two
+immune pathways (chemokines, antimicrobial peptides) are enriched ---
+meaning the immune system is more active. Together this suggests
+mechanical lung stress is associated with a body-wide metabolic
+slowdown and immune activation, detectable in blood.
 
 \textbf{How it was calculated.}
 All 4,979 proteins were ranked by their MAL $t$-statistic
@@ -316,12 +357,26 @@ Reactome  & Antimicrobial Peptides                   & $+1.94$ & 0.032 \\
 \subsection*{C. STRING Network}
 
 \textbf{What we are looking at.}
-A network where each node is a significant protein and edges connect
-proteins that are known to physically interact or co-express in humans
-(from the STRING database). Clusters reveal which proteins work
-together --- if a group of connected proteins all go up with MAL, that
-points to a coherent biological process rather than a random scatter
-of signals.
+A protein--protein interaction network for the 45 MAL-associated
+proteins. Each node is one protein. An edge (line) between two proteins
+means they are known to physically interact or co-function in humans,
+based on published data in the STRING database.
+
+\begin{itemize}
+  \item \textbf{A cluster of connected nodes} means those proteins work
+    together as part of the same biological process. If they all go up
+    or down with MAL, that cluster represents a coherent pathway being
+    affected --- stronger evidence than if each protein were isolated.
+  \item \textbf{A node with many edges (hub)} is a protein that
+    interacts with many others, suggesting it may be a central
+    regulator in the MAL response.
+  \item \textbf{An isolated node} (no edges) means that protein had no
+    known high-confidence interactions with other significant proteins
+    in this set. It may still be biologically relevant, just acting
+    independently.
+  \item \textbf{Edge thickness/colour} reflects interaction confidence
+    score ($\geq 400$ = medium confidence).
+\end{itemize}
 
 \textbf{How it was calculated.}
 The 45 FDR-significant proteins were submitted to the STRING~v11.5
@@ -339,13 +394,35 @@ human database. Only interactions with a confidence score $\geq 400$
 % =============================================================================
 \section*{Figure 3 --- Quartile Plot of Proteomic Risk Score}
 
-\noindent $x$-axis: PRS quartile (1 = lowest, 4 = highest). $y$-axis:
-$\hat\beta$ coefficient (HU/SD) from OLS of emphysema progression on PRS
-within each quartile, with 95\% CI. Dashed line at zero.
+\textbf{What we are looking at.}
+The subjects are divided into four groups by their Proteomic Risk Score
+(quartile 1 = lowest 25\% of PRS, quartile 4 = highest 25\%).
+Within each group, we ask: does a higher PRS within that group predict
+more emphysema progression?
 
-\textbf{Key result.} Effect sizes across quartiles are small and
-confidence intervals cross zero in all quartiles, consistent with the
-non-significant overall PRS association ($p = 0.079$).
+\begin{itemize}
+  \item \textbf{$x$-axis:} risk score quartile (1--4). Quartile 1 =
+    people with the least MAL-like protein profile in blood. Quartile 4
+    = people with the most MAL-like protein profile.
+  \item \textbf{$y$-axis ($\hat\beta$, HU/SD):} the regression
+    coefficient for PRS in that quartile subgroup. A positive value
+    means higher PRS within the quartile is associated with
+    \emph{less} negative progression (density loss smaller).
+    A negative value means higher PRS is associated with
+    \emph{more} progression (more density loss). Zero means no
+    association.
+  \item \textbf{Error bars:} 95\% confidence interval. If the bar
+    crosses the dashed zero line, the association is not statistically
+    significant in that quartile.
+  \item \textbf{What a consistent upward or downward trend across
+    quartiles would mean:} the PRS is linearly tracking disease
+    severity. If the bars are flat and all cross zero, the score is
+    not predicting progression at any level of risk.
+\end{itemize}
+
+\textbf{Key result.} Effect sizes are small and confidence intervals
+cross zero in all quartiles --- the PRS does not predict emphysema
+progression within any risk stratum ($p = 0.079$ overall).
 
 \begin{figure}[H]
   \centering
@@ -359,11 +436,23 @@ non-significant overall PRS association ($p = 0.079$).
 \section*{Proteomic Risk Score --- Methods and Results}
 
 \textbf{What we are looking at.}
-A single score per person, computed from their plasma protein levels,
-that summarises how ``MAL-like'' their proteome looks. The goal is to
-capture the overall proteomic signal of mechanical lung stress in one
-number, which can then be tested for association with disease
-outcomes. Think of it as a blood test for MAL.
+A single number per person --- their Proteomic Risk Score (PRS) ---
+computed from a weighted combination of 378 plasma proteins.
+\begin{itemize}
+  \item \textbf{High PRS:} the person's blood protein pattern looks
+    similar to someone with high MAL (more mechanically stressed lung).
+  \item \textbf{Low PRS:} their protein pattern looks like someone with
+    low MAL (less mechanical stress).
+  \item \textbf{Test R$^2$ = 0.157:} the PRS explains 15.7\% of the
+    variation in MAL in held-out subjects. That means 84\% of what
+    makes MAL high or low is \emph{not} captured by the blood
+    proteome --- a meaningful but modest signal.
+  \item \textbf{Positive $\hat\beta$ in the weights table:} that
+    protein is higher in people with more MAL, and contributes
+    positively to the score.
+  \item \textbf{Negative $\hat\beta$:} that protein is lower in
+    people with more MAL, and pulls the score down.
+\end{itemize}
 
 \textbf{How it was calculated.}
 \textbf{Data split.} 70/30 train/test (\texttt{set.seed(2024)}),
@@ -454,9 +543,37 @@ CNTN1   & Contactin-1              & $-0.107$ & $-0.229$ & $0.015$ & $0.086$ \\
 
 \textbf{What we are looking at.}
 Does the blood protein score add anything useful for predicting
-emphysema progression, beyond what age, sex, race, smoking, and
-pack-years already tell us? We fit three regression models and compare
-how well each fits the data, penalised for complexity.
+emphysema progression, on top of what clinical variables already tell
+us? Three models are compared:
+
+\begin{itemize}
+  \item \textbf{Clinical model:} uses only age, sex, race, smoking
+    status, pack-years, and CT scanner type. This is the baseline ---
+    what a doctor already knows.
+  \item \textbf{PRS-only model:} uses only the protein score, baseline
+    lung density, and scanner. No clinical variables.
+  \item \textbf{Clinical + PRS model:} adds the protein score on top
+    of the clinical model. This is the key test --- does blood
+    proteomics help beyond standard care variables?
+\end{itemize}
+
+\textbf{Reading the AIC table:}
+\begin{itemize}
+  \item \textbf{Lower AIC = better model} (fits the data well without
+    using unnecessary parameters).
+  \item \textbf{$\Delta$AIC vs.\ Clinical = 0:} the clinical model is
+    the reference. All other models are compared to it.
+  \item \textbf{$\Delta$AIC $> 0$:} that model is \emph{worse} than
+    clinical alone --- it either fits poorly or uses too many
+    parameters for the gain.
+  \item \textbf{$\Delta$AIC $\leq -2$:} that model is meaningfully
+    \emph{better} than clinical alone. This is the threshold we need
+    to cross to claim the PRS adds value.
+  \item \textbf{PRS $\hat\beta = 0.42$ HU/SD, $p = 0.079$:} for each
+    1 SD increase in PRS in the combined model, emphysema progression
+    changes by 0.42 HU on average. Since normal progression SD is
+    $\sim$7 HU, this is a small, non-significant effect.
+\end{itemize}
 
 \textbf{How it was calculated.}
 AIC (Akaike Information Criterion) measures model fit minus a penalty
@@ -497,10 +614,33 @@ The PRS-only model is substantially worse than clinical alone
 
 \textbf{What we are looking at.}
 MAL causes emphysema progression. But does it do so \emph{through}
-the blood proteins --- meaning, does MAL first change the proteome,
-and then the proteome drives progression? Or does MAL cause
-progression through some other path entirely, independent of what
-we can measure in blood?
+the blood proteins, or through a completely separate path?
+
+\begin{itemize}
+  \item \textbf{NDE (Natural Direct Effect) = 19.7 HU, $p = 0.004$:}
+    the portion of MAL's effect on progression that does \emph{not}
+    go through the protein score. This is large and significant ---
+    meaning MAL strongly drives progression through mechanisms
+    independent of what we measured in blood. A one-unit increase in
+    MAL is associated with 19.7 HU more progression via the direct
+    path alone.
+  \item \textbf{NIE (Natural Indirect Effect) = $-0.12$ HU,
+    $p = 0.97$:} the portion of MAL's effect that \emph{does} go
+    through the protein score. This is essentially zero and
+    non-significant --- the proteins are not the mechanism by which
+    MAL causes progression.
+  \item \textbf{Proportion mediated = $-0.6\%$:} of the total MAL
+    effect on progression, only $-0.6\%$ is explained by the blood
+    protein pathway. Negative proportion can occur when the indirect
+    effect goes in the opposite direction to the total effect; here it
+    just reflects noise around zero.
+  \item \textbf{Total effect = 19.6 HU:} the sum of NDE + NIE. This
+    is the overall association of MAL with progression, and it is
+    almost entirely direct.
+  \item \textbf{In plain terms:} MAL damages the lung directly. The
+    protein changes we detect in blood are a reflection of that
+    process, not a driver of it.
+\end{itemize}
 
 \textbf{How it was calculated.}
 The pathway tested is: MAL $\to$ Proteomic Risk Score $\to$
