@@ -41,6 +41,78 @@ Emphysema progression = change in CT lung density Phase~3 $-$ Phase~2
 (\texttt{Change\_lung\_density\_vnb\_P2\_P3}, HU). Negative = worsened.
 
 % =============================================================================
+\section*{Data Sources and Variable Names}
+
+Four CSV files were used. All joins are on \texttt{sid}.
+
+\subsection*{\texttt{data/csv\_exports/prot.csv} --- SomaScan proteomics}
+
+\begin{tabular}{ll}
+\toprule
+Column & Description \\
+\midrule
+\texttt{sid}            & Subject identifier (join key) \\
+\texttt{X\{seqID\}}     & Raw RFU for each protein, e.g.\ \texttt{X10000.28} \\
+                        & $\sim$4,979 protein columns; pattern \texttt{\^{}X[0-9]} \\
+                        & Renamed to \texttt{log2\_X\{seqID\}} after log$_2$ transform \\
+\bottomrule
+\end{tabular}
+
+\subsection*{\texttt{data/csv\_exports/pheno\_MAL.csv} --- Phenotypes and covariates}
+
+\begin{tabular}{lll}
+\toprule
+Column & Used as & Status \\
+\midrule
+\texttt{sid}                          & Join key            & Found \\
+\texttt{Change\_lung\_density\_vnb\_P2\_P3} & Outcome: emphysema progression (HU) & Found \\
+\texttt{lung\_density\_vnb\_P2}       & Baseline lung density (HU)  & Found \\
+\texttt{Age\_P2}                      & Age (years)                 & Found \\
+\texttt{gender}                       & Sex (coded 1/2)             & Found \\
+\texttt{race}                         & Race (coded 1/2)            & Found \\
+\texttt{ATS\_PackYears\_P2}           & Pack-years of smoking       & Found \\
+\texttt{SmokCigNow\_P2}               & Current smoking (0/1)       & Found \\
+\texttt{scanner\_model\_clean\_P2}    & CT scanner model            & Found \\
+\texttt{FEV1\_FVC\_post\_P2}          & FEV$_1$/FVC ratio           & Found \\
+\texttt{PC1} -- \texttt{PC5}          & Ancestry principal components & Found \\
+\texttt{FEV1pp\_P2}                   & FEV$_1$\% predicted         & \textcolor{red}{NOT FOUND} \\
+\texttt{BMI} / \texttt{bmi\_P2}       & Body mass index             & \textcolor{red}{NOT FOUND} \\
+\bottomrule
+\end{tabular}
+
+\subsection*{\texttt{data/Data/MAL.csv} --- MAL scores}
+
+\begin{tabular}{ll}
+\toprule
+Column & Description \\
+\midrule
+\texttt{sid}      & Subject identifier (join key) \\
+\texttt{meanmal}  & MAL score (continuous, range 0.01--0.40) \\
+\bottomrule
+\end{tabular}
+
+\subsection*{\texttt{data/csv\_exports/metadat5k.csv} --- Protein annotation}
+
+\begin{tabular}{ll}
+\toprule
+Column & Description \\
+\midrule
+\texttt{seqID}              & Protein sequence identifier; joins to \texttt{log2\_X\{seqID\}} \\
+\texttt{EntrezGeneSymbol}   & HGNC gene symbol (e.g.\ \texttt{ADIPOQ}) \\
+\texttt{Target}             & Short protein name (e.g.\ \texttt{Adiponectin}) \\
+\texttt{TargetFullName}     & Full protein name \\
+\bottomrule
+\end{tabular}
+
+\vspace{8pt}
+\noindent\textbf{Join logic.} Three-way inner join:
+\texttt{prot} $\bowtie_{\texttt{sid}}$ \texttt{pheno} $\bowtie_{\texttt{sid}}$ \texttt{MAL}.
+Metadata joined on \texttt{seqID = sub("\^{}log2\_X", "", predictor)}.
+Starting $n = 4{,}630$ after merge; $n = 1{,}306$ after complete-case
+filter on all required columns.
+
+\bigskip
+% =============================================================================
 \section*{Table 1 --- Demographics}
 
 \noindent Study population after 3-way merge (proteomics $\times$
