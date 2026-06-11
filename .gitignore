@@ -16,6 +16,8 @@ MAL_omics/*.png
 MAL_omics/*.html
 MAL_omics/*.sqlite
 MAL_omics/*.txt.gz
+# Keep .tex manuscript tracked (not generated output)
+!MAL_omics/*.tex
 
 # -----------------------------------------------------------------------------
 # GENERATED OUTPUTS — reproducible from source, no need to track
