@@ -232,33 +232,60 @@ Top depleted (lower with more MAL):
 
 \subsection*{B. GSEA Barplot}
 
-\noindent Proteins ranked by MAL $t$-statistic; gene sets from Hallmark,
-KEGG, and Reactome. 9 pathways reached adjusted $p < 0.05$.
+\noindent All 4,979 proteins were ranked by their MAL $t$-statistic
+(most positively associated with MAL at the top, most negatively
+associated at the bottom). Gene sets from three collections were tested:
+Hallmark, KEGG Legacy, and Reactome (gene-set sizes 15--500).
+
+\textbf{NES (Normalized Enrichment Score):} measures whether the
+members of a gene set are concentrated at the top or bottom of the
+ranked protein list.
+\begin{itemize}
+  \item NES $> 0$: the pathway's proteins tend to be \emph{higher} in
+    subjects with more MAL (enriched).
+  \item NES $< 0$: the pathway's proteins tend to be \emph{lower} in
+    subjects with more MAL (depleted).
+  \item The normalization accounts for gene-set size so scores are
+    comparable across pathways.
+\end{itemize}
+
+\textbf{padj:} Benjamini--Hochberg-adjusted $p$-value across all
+pathways tested within each collection. Threshold used: padj $< 0.05$.
+
+\textbf{What we are seeing:} 9 pathways reached significance.
+Seven are depleted (NES $< 0$) --- meaning proteins in these pathways
+are systemically lower in people with higher MAL. All seven are core
+metabolic pathways: energy production (oxidative phosphorylation,
+glycolysis), fat breakdown (fatty acid metabolism), amino acid handling,
+and drug/xenobiotic processing. Two pathways are enriched (NES $> 0$):
+chemokine receptor signalling and antimicrobial peptides, both
+inflammatory/immune in nature.
+
+In plain terms: higher MAL is associated with a systemic shift away
+from normal metabolic housekeeping and toward an inflammatory state.
+This is detectable in peripheral blood even though MAL is a lung
+structural measure.
 
 \begin{table}[H]
 \centering
-\caption*{\textbf{GSEA significant pathways.} NES $<$ 0 = depleted in
-  high-MAL subjects.}
+\caption*{\textbf{GSEA significant pathways} (padj $< 0.05$).
+  NES $> 0$ = enriched in high MAL; NES $< 0$ = depleted.}
 \begin{tabular}{llrr}
 \toprule
 Collection & Pathway & NES & padj \\
 \midrule
-Hallmark  & Fatty Acid Metabolism                   & $-1.76$ & 0.021 \\
-Hallmark  & Oxidative Phosphorylation               & $-1.78$ & 0.021 \\
-KEGG      & Glycolysis / Gluconeogenesis            & $-2.02$ & 0.018 \\
-Reactome  & Biological Oxidations                   & $-2.05$ & 0.007 \\
+Hallmark  & Fatty Acid Metabolism                    & $-1.76$ & 0.021 \\
+Hallmark  & Oxidative Phosphorylation                & $-1.78$ & 0.021 \\
+KEGG      & Glycolysis / Gluconeogenesis             & $-2.02$ & 0.018 \\
+Reactome  & Biological Oxidations                    & $-2.05$ & 0.007 \\
 Reactome  & Metabolism of Amino Acids \& Derivatives & $-1.84$ & 0.013 \\
-Reactome  & Diseases of Metabolism                  & $-1.76$ & 0.032 \\
-Reactome  & Phase I Functionalization of Compounds  & $-1.97$ & 0.037 \\
-Reactome  & Chemokine Receptors Bind Chemokines     & $+2.02$ & 0.024 \\
-Reactome  & Antimicrobial Peptides                  & $+1.94$ & 0.032 \\
+Reactome  & Diseases of Metabolism                   & $-1.76$ & 0.032 \\
+Reactome  & Phase I Functionalization of Compounds   & $-1.97$ & 0.037 \\
+Reactome  & Chemokine Receptors Bind Chemokines      & $+2.02$ & 0.024 \\
+Reactome  & Antimicrobial Peptides                   & $+1.94$ & 0.032 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\textbf{Key result.} High MAL is associated with broad suppression of
-energy metabolism and upregulation of chemokine and innate immune
-signalling.
 
 \begin{figure}[H]
   \centering
