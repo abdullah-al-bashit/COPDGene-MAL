@@ -78,6 +78,7 @@ else
   # Default: run all registered analyses
   echo "=== Running all analyses ==="
   render_notebook "Aim2_prediction/Aim2_prediction_adaptive_lasso.ipynb"
+  render_notebook "MAL_omics/MAL_omics_proteomics.ipynb"
   # Add new scripts here — one line each:
   # render_notebook "NewProject/analysis.ipynb"
   # render_rscript  "NewProject/model.R"
