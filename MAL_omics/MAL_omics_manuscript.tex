@@ -65,38 +65,34 @@ phenotype $\times$ MAL) and complete-case filtering.
 Characteristic & Overall ($n = 1{,}306$) \\
 \midrule
 \textit{Demographics} & \\
-\quad Age (years)          & [from notebook output] \\
-\quad Sex, female          & [from notebook output] \\
-\quad Race, White          & [from notebook output] \\
+\quad Age (years)                         & 65 (8) \\
+\quad Sex: male / female                  & 633 (48\%) / 673 (52\%) \\
+\quad Race: White / Black                 & 991 (76\%) / 315 (24\%) \\
 \addlinespace
 \textit{Smoking} & \\
-\quad Current smoker (\texttt{SmokCigNow\_P2})     & [from notebook output] \\
-\quad Pack-years (\texttt{ATS\_PackYears\_P2})      & [from notebook output] \\
+\quad Current smoker                      & 445 (34\%) \\
+\quad Pack-years                          & 43 (23) \\
 \addlinespace
 \textit{Pulmonary function} & \\
-\quad FEV\textsubscript{1}\% predicted              &
-  \missing{column not found} \\
-\quad FEV\textsubscript{1}/FVC (\texttt{FEV1\_FVC\_post\_P2})
-                                                    & [from notebook output] \\
+\quad FEV\textsubscript{1}\% predicted    & \missing{column not found in phenotype file} \\
+\quad FEV\textsubscript{1}/FVC            & 0.69 (0.14) \\
 \addlinespace
 \textit{CT imaging} & \\
-\quad Lung density Phase 2 (\texttt{lung\_density\_vnb\_P2}, HU)
-                                                    & [from notebook output] \\
-\quad MAL score (\texttt{meanmal})                  & [from notebook output] \\
-\quad Emphysema progression (HU)                    & [from notebook output] \\
+\quad Lung density Phase 2 (HU)           & 83 (23) \\
+\quad MAL score                           & 0.04 (0.05) \\
+\quad Emphysema progression (HU)          & 1 (7) \\
 \addlinespace
 \textit{Anthropometrics} & \\
-\quad BMI (kg/m\textsuperscript{2})                 &
-  \missing{column not found} \\
+\quad BMI (kg/m\textsuperscript{2})       & \missing{column not found in phenotype file} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent\textit{Note.} The exact values for rows marked
-``[from notebook output]'' are rendered as an HTML table in cell~9 of
-\texttt{MAL\_omics\_proteomics.ipynb}. They could not be automatically
-extracted here because the data are PHI-protected and not committed to
-the repository.
+\noindent\textit{Note.} Sex is coded 1/2 in the data; assumed Male/Female
+per COPDGene convention. Race coded 1/2; assumed White/Black. Emphysema
+progression mean of 1 HU (SD 7) reflects a near-zero mean --- the
+distribution includes both progressors (negative $\Delta\rho$) and
+improvers (positive $\Delta\rho$).
 
 % =============================================================================
 \section*{Figure 1 --- Study Design}
