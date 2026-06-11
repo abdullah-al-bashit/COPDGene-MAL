@@ -38,7 +38,8 @@ for MAL and emphysema progressors.
 
 \noindent\textbf{Outcome.}
 Emphysema progression = change in CT lung density Phase~3 $-$ Phase~2
-(\texttt{Change\_lung\_density\_vnb\_P2\_P3}, HU). Negative = worsened.
+(\texttt{Change\_lung\_\allowbreak density\_\allowbreak vnb\_\allowbreak P2\_\allowbreak P3}, HU).
+Negative = worsened.
 
 % =============================================================================
 \section*{Data Sources and Variable Names}
@@ -47,14 +48,14 @@ Four CSV files were used. All joins are on \texttt{sid}.
 
 \subsection*{\texttt{data/csv\_exports/prot.csv} --- SomaScan proteomics}
 
-\begin{tabular}{ll}
+\begin{tabular}{p{3.5cm}p{10cm}}
 \toprule
 Column & Description \\
 \midrule
-\texttt{sid}            & Subject identifier (join key) \\
-\texttt{X\{seqID\}}     & Raw RFU for each protein, e.g.\ \texttt{X10000.28} \\
-                        & $\sim$4,979 protein columns; pattern \texttt{\^{}X[0-9]} \\
-                        & Renamed to \texttt{log2\_X\{seqID\}} after log$_2$ transform \\
+\texttt{sid}             & Subject identifier (join key) \\
+\texttt{X\{seqID\}}      & Raw RFU value for each protein (e.g.\ \texttt{X10000.28}).
+                           $\sim$4,979 columns matching pattern \texttt{\^{}X[0-9]}.
+                           Renamed to \texttt{log2\_X\{seqID\}} after log$_2$ transform. \\
 \bottomrule
 \end{tabular}
 
@@ -191,6 +192,14 @@ causal mediation.
 
 \subsection*{A. Volcano Plot (protein $\sim$ MAL)}
 
+\textbf{What we are looking at.}
+A volcano plot shows which proteins in the blood are statistically
+associated with MAL. Each dot is one protein. The further right, the
+more it goes \emph{up} with more MAL. The further left, the more it
+goes \emph{down} with more MAL. The further up the dot sits, the more
+statistically confident we are in that association (lower FDR).
+
+\textbf{How it was calculated.}
 For each of 4,979 proteins, the model is:
 \[
   \log_2(\text{protein}) \;\sim\;
@@ -232,7 +241,17 @@ Top depleted (lower with more MAL):
 
 \subsection*{B. GSEA Barplot}
 
-\noindent All 4,979 proteins were ranked by their MAL $t$-statistic
+\textbf{What we are looking at.}
+Instead of asking ``is this one protein associated with MAL?'', GSEA
+asks: ``does this entire biological \emph{pathway} show a coordinated
+shift with MAL?'' A pathway might have no single dramatically changed
+protein, but if 80\% of its proteins are all slightly higher in
+high-MAL subjects, that is a real biological signal. The barplot shows
+each significant pathway as a bar --- the length is the NES, the
+direction tells you enriched vs.\ depleted.
+
+\textbf{How it was calculated.}
+All 4,979 proteins were ranked by their MAL $t$-statistic
 (most positively associated with MAL at the top, most negatively
 associated at the bottom). Gene sets from three collections were tested:
 Hallmark, KEGG Legacy, and Reactome (gene-set sizes 15--500).
@@ -296,8 +315,18 @@ Reactome  & Antimicrobial Peptides                   & $+1.94$ & 0.032 \\
 
 \subsection*{C. STRING Network}
 
-\noindent 45 FDR-significant proteins mapped to STRING~v11.5 (human,
-interaction score $\geq 400$). Only PNG available ---
+\textbf{What we are looking at.}
+A network where each node is a significant protein and edges connect
+proteins that are known to physically interact or co-express in humans
+(from the STRING database). Clusters reveal which proteins work
+together --- if a group of connected proteins all go up with MAL, that
+points to a coherent biological process rather than a random scatter
+of signals.
+
+\textbf{How it was calculated.}
+The 45 FDR-significant proteins were submitted to the STRING~v11.5
+human database. Only interactions with a confidence score $\geq 400$
+(medium confidence) were drawn. Only PNG available ---
 \texttt{STRINGdb::plot\_network()} does not support PDF output.
 
 \begin{figure}[H]
@@ -329,6 +358,14 @@ non-significant overall PRS association ($p = 0.079$).
 % =============================================================================
 \section*{Proteomic Risk Score --- Methods and Results}
 
+\textbf{What we are looking at.}
+A single score per person, computed from their plasma protein levels,
+that summarises how ``MAL-like'' their proteome looks. The goal is to
+capture the overall proteomic signal of mechanical lung stress in one
+number, which can then be tested for association with disease
+outcomes. Think of it as a blood test for MAL.
+
+\textbf{How it was calculated.}
 \textbf{Data split.} 70/30 train/test (\texttt{set.seed(2024)}),
 $n_{\text{train}} = 914$, $n_{\text{test}} = 392$.
 
@@ -415,7 +452,18 @@ CNTN1   & Contactin-1              & $-0.107$ & $-0.229$ & $0.015$ & $0.086$ \\
 % =============================================================================
 \section*{AIC Comparison --- PRS vs.\ Clinical Model}
 
-\noindent Three models fitted by OLS for emphysema progression.
+\textbf{What we are looking at.}
+Does the blood protein score add anything useful for predicting
+emphysema progression, beyond what age, sex, race, smoking, and
+pack-years already tell us? We fit three regression models and compare
+how well each fits the data, penalised for complexity.
+
+\textbf{How it was calculated.}
+AIC (Akaike Information Criterion) measures model fit minus a penalty
+for the number of parameters. A lower AIC is better. A difference of
+$-2$ or more (i.e.\ the new model is at least 2 units lower) is
+considered a meaningful improvement. Three OLS models were fitted for
+emphysema progression.
 AIC improvement of $\leq -2$ considered meaningful.
 
 \textbf{Note:} BMI was not available in the phenotype file and is
@@ -447,7 +495,15 @@ The PRS-only model is substantially worse than clinical alone
 % =============================================================================
 \section*{Table 2 --- Causal Mediation}
 
-\noindent Pathway tested: MAL $\to$ Proteomic Risk Score $\to$
+\textbf{What we are looking at.}
+MAL causes emphysema progression. But does it do so \emph{through}
+the blood proteins --- meaning, does MAL first change the proteome,
+and then the proteome drives progression? Or does MAL cause
+progression through some other path entirely, independent of what
+we can measure in blood?
+
+\textbf{How it was calculated.}
+The pathway tested is: MAL $\to$ Proteomic Risk Score $\to$
 Emphysema Progression. Fitted using the \texttt{medflex} R package
 (natural effects framework) with robust sandwich standard errors.
 
