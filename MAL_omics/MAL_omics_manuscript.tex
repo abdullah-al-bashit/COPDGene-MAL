@@ -1,5 +1,5 @@
 % =============================================================================
-% MAL Omics — Tables, Figures, and Key Results
+% MAL Omics: Tables, Figures, and Key Results
 % COPDGene Plasma Proteomics
 % =============================================================================
 \documentclass[11pt, letterpaper]{article}
@@ -26,27 +26,58 @@
 \begin{document}
 
 \begin{center}
-  {\Large \textbf{MAL Omics --- Proteomics Analysis Report}} \\[4pt]
-  {\normalsize COPDGene | SomaScan ($\sim$4,979 proteins) | $n = 1{,}306$}
+  {\Large \textbf{MAL Omics: Proteomics Analysis Report}} \\[4pt]
+  {\normalsize COPDGene, SomaScan ($\sim$4,979 proteins), $n = 1{,}306$}
 \end{center}
 
 \vspace{6pt}
+\noindent\textbf{Study.}
+COPDGene is a longitudinal cohort study of current and former smokers
+enrolled at 21 US clinical centers. Subjects were seen at Phase~2
+($\sim$2013) and Phase~3 ($\sim$2019). Blood was drawn at Phase~2 and
+profiled by SomaScan, an aptamer-based platform that quantifies
+$\sim$4,979 plasma proteins simultaneously as RFU (Relative Fluorescence
+Units). This analysis uses $n = 1{,}306$ subjects with complete
+proteomics, phenotype, and MAL data.
+
+\noindent\textbf{MAL (Mechanically Affected Lung).}
+Computed tomography (CT)-derived continuous score (range 0.01--0.40)
+measuring the fraction of lung volume under destructive mechanical
+stress. Higher MAL = more lung tissue under stress. MAL is computed from
+inspiratory/expiratory CT image registration and is distinct from
+standard emphysema measures (e.g., \%LAA-950). Variable name in data:
+\texttt{meanmal}.
+
+MAL is itself a strong predictor of who will develop worse emphysema
+over time: higher mechanical stress on lung tissue drives progressive
+structural damage. However, MAL requires specialized CT analysis and is
+not available from a routine blood draw.
+
 \noindent\textbf{Goal.}
-(1) Understand biological correlates of MAL detectable in peripheral
-plasma. (2) Develop a blood-based proteomic risk score to enrich studies
-for MAL and emphysema progressors.
+(1) Identify which Phase~2 plasma proteins are associated with MAL,
+establishing that mechanical lung stress leaves a detectable signal
+in blood.
+(2) Use those proteins to build a Proteomic Risk Score (PRS) from a
+Phase~2 blood draw that approximates MAL and can predict who will
+develop worse emphysema by Phase~3. If successful, the PRS would
+allow MAL-like risk stratification without requiring CT image
+registration. The proteins themselves are not measured at Phase~3;
+they serve as baseline predictors of the CT density change that
+occurs between visits ($\sim$6 years apart).
 
 \noindent\textbf{Outcome.}
 Emphysema progression = change in CT lung density Phase~3 $-$ Phase~2
-(\texttt{Change\_lung\_\allowbreak density\_\allowbreak vnb\_\allowbreak P2\_\allowbreak P3}, HU).
-Negative = worsened.
+(\texttt{Change\_lung\_\allowbreak density\_\allowbreak vnb\_\allowbreak P2\_\allowbreak P3},
+Hounsfield Units [HU]). Negative = worsened. Mean $\approx 1$ HU
+(standard deviation [SD] 7) in this cohort; a negative value means the
+lung became less dense (more emphysematous) between visits.
 
 % =============================================================================
 \section*{Data Sources and Variable Names}
 
 Four CSV files were used. All joins are on \texttt{sid}.
 
-\subsection*{\texttt{data/csv\_exports/prot.csv} --- SomaScan proteomics}
+\subsection*{\texttt{data/csv\_exports/prot.csv}: SomaScan proteomics}
 
 \begin{tabular}{p{3.5cm}p{10cm}}
 \toprule
@@ -59,7 +90,7 @@ Column & Description \\
 \bottomrule
 \end{tabular}
 
-\subsection*{\texttt{data/csv\_exports/pheno\_MAL.csv} --- Phenotypes and covariates}
+\subsection*{\texttt{data/csv\_exports/pheno\_MAL.csv}: Phenotypes and covariates}
 
 \begin{tabular}{lll}
 \toprule
@@ -74,14 +105,14 @@ Column & Used as & Status \\
 \texttt{ATS\_PackYears\_P2}           & Pack-years of smoking       & Found \\
 \texttt{SmokCigNow\_P2}               & Current smoking (0/1)       & Found \\
 \texttt{scanner\_model\_clean\_P2}    & CT scanner model            & Found \\
-\texttt{FEV1\_FVC\_post\_P2}          & FEV$_1$/FVC ratio           & Found \\
+\texttt{FEV1\_FVC\_post\_P2}          & FEV$_1$ (forced expiratory volume in 1 second) / FVC (forced vital capacity) ratio & Found \\
 \texttt{PC1} -- \texttt{PC5}          & Ancestry principal components & Found \\
 \texttt{FEV1pp\_P2}                   & FEV$_1$\% predicted         & \textcolor{red}{NOT FOUND} \\
 \texttt{BMI} / \texttt{bmi\_P2}       & Body mass index             & \textcolor{red}{NOT FOUND} \\
 \bottomrule
 \end{tabular}
 
-\subsection*{\texttt{data/Data/MAL.csv} --- MAL scores}
+\subsection*{\texttt{data/Data/MAL.csv}: MAL scores}
 
 \begin{tabular}{ll}
 \toprule
@@ -92,14 +123,14 @@ Column & Description \\
 \bottomrule
 \end{tabular}
 
-\subsection*{\texttt{data/csv\_exports/metadat5k.csv} --- Protein annotation}
+\subsection*{\texttt{data/csv\_exports/metadat5k.csv}: Protein annotation}
 
 \begin{tabular}{ll}
 \toprule
 Column & Description \\
 \midrule
 \texttt{seqID}              & Protein sequence identifier; joins to \texttt{log2\_X\{seqID\}} \\
-\texttt{EntrezGeneSymbol}   & HGNC gene symbol (e.g.\ \texttt{ADIPOQ}) \\
+\texttt{EntrezGeneSymbol}   & HGNC (HUGO Gene Nomenclature Committee) gene symbol (e.g.\ \texttt{ADIPOQ}) \\
 \texttt{Target}             & Short protein name (e.g.\ \texttt{Adiponectin}) \\
 \texttt{TargetFullName}     & Full protein name \\
 \bottomrule
@@ -109,32 +140,54 @@ Column & Description \\
 \noindent\textbf{Join logic.} Three-way inner join:
 \texttt{prot} $\bowtie_{\texttt{sid}}$ \texttt{pheno} $\bowtie_{\texttt{sid}}$ \texttt{MAL}.
 Metadata joined on \texttt{seqID = sub("\^{}log2\_X", "", predictor)}.
-Starting $n = 4{,}630$ after merge; $n = 1{,}306$ after complete-case
-filter on all required columns.
+
+File sizes: \texttt{prot.csv} has 5,670 subjects; \texttt{MAL.csv}
+has 5,024 subjects; \texttt{pheno\_MAL.csv} has 10,652 subjects.
+After the 3-way inner join on \texttt{sid}: $n = 4{,}630$.
+
+Complete-case filter then requires non-missing values for all of:
+\texttt{Change\_lung\_density\_vnb\_P2\_P3} (Phase~3 outcome),
+\texttt{lung\_density\_vnb\_P2}, \texttt{meanmal}, \texttt{Age\_P2},
+\texttt{gender}, \texttt{race}, \texttt{ATS\_PackYears\_P2},
+\texttt{SmokCigNow\_P2}, \texttt{scanner\_model\_clean\_P2},
+\texttt{FEV1\_FVC\_post\_P2}, and \texttt{PC1}--\texttt{PC5}.
+
+This reduces the sample to $n = 1{,}306$. The large drop
+($4{,}630 \to 1{,}306$) is driven primarily by the Phase~3 outcome:
+8,912 of 10,652 subjects in \texttt{pheno\_MAL.csv} (84\%) have no
+Phase~3 CT scan recorded, meaning they did not return for the
+follow-up visit $\sim$6 years later.
 
 \bigskip
 % =============================================================================
-\section*{Table 1 --- Demographics}
+\section*{Table 1: Demographics}
 
 \noindent Study population after 3-way merge (proteomics $\times$
 phenotype $\times$ MAL) and complete-case filtering.
 
 \textbf{Variables not found in the phenotype file:}
 \begin{itemize}
-  \item \missing{FEV1pp\_P2 (FEV\textsubscript{1}\% predicted)} ---
+  \item \missing{FEV1pp\_P2 (FEV\textsubscript{1}\% predicted)}:
     column not present under any searched pattern
     (\texttt{FEV1pp}, \texttt{FEV1pct}, \texttt{FEV1\_percent\_pred}).
     Row left blank.
-  \item \missing{BMI} --- no column matching
+  \item \missing{BMI}: no column matching
     \texttt{\^{}[Bb][Mm][Ii]} found in the phenotype file.
     Row left blank.
 \end{itemize}
 
 \begin{table}[H]
 \centering
-\caption*{\textbf{Table 1.} Study population ($n = 1{,}306$).
-  Mean (SD) for continuous; $n$ (\%) for categorical.
-  Emphysema progression = $\rho_{\text{P3}} - \rho_{\text{P2}}$ (HU).}
+\caption*{\textbf{Table 1.} Baseline characteristics of COPDGene
+  participants included in the proteomics analysis ($n = 1{,}306$).
+  Subjects had complete SomaScan plasma proteomics, phenotype data, and
+  MAL score. Continuous variables: mean (SD); categorical: $n$ (\%).
+  MAL (Mechanically Affected Lung) = CT-derived score (range
+  0.01--0.40); higher values indicate more lung under destructive
+  mechanical stress. Emphysema progression = CT lung density at
+  Phase~3 minus Phase~2 ($\rho_{\text{P3}} - \rho_{\text{P2}}$, HU);
+  negative values indicate worsening. FEV$_1$\% predicted and BMI
+  were not available in the phenotype file.}
 \begin{tabular}{lc}
 \toprule
 Characteristic & Overall ($n = 1{,}306$) \\
@@ -165,62 +218,62 @@ Characteristic & Overall ($n = 1{,}306$) \\
 
 \noindent\textit{Note.} Sex is coded 1/2 in the data; assumed Male/Female
 per COPDGene convention. Race coded 1/2; assumed White/Black. Emphysema
-progression mean of 1 HU (SD 7) reflects a near-zero mean --- the
+progression mean of 1 HU (SD 7) reflects a near-zero mean; the
 distribution includes both progressors (negative $\Delta\rho$) and
 improvers (positive $\Delta\rho$).
 
 % =============================================================================
-\section*{Figure 1 --- Study Design}
+\section*{Figure 1: Study Design}
 
 \noindent Not automatically generated. Requires a manual schematic
 (e.g., BioRender) illustrating the analysis flow:
-SomaScan proteomics $\to$ differential expression $\to$ GSEA / STRING
-$\to$ adaptive LASSO PRS $\to$ emphysema progression association $\to$
-causal mediation.
+SomaScan proteomics $\to$ differential expression $\to$ GSEA (Gene Set
+Enrichment Analysis) / STRING $\to$ adaptive LASSO (Least Absolute
+Shrinkage and Selection Operator) PRS (Proteomic Risk Score) $\to$
+emphysema progression association $\to$ causal mediation.
 
 \begin{figure}[H]
   \centering
   \fbox{\parbox{0.85\textwidth}{\centering\vspace{2cm}
-    \textit{[Figure 1 placeholder --- study design schematic to be
+    \textit{[Figure 1 placeholder: study design schematic to be
     drawn manually, e.g., BioRender]}
   \vspace{2cm}}}
-  \caption{Study design schematic.}
+  \caption{Overview of the COPDGene MAL omics analysis pipeline.
+    SomaScan plasma proteomics ($\sim$4,979 proteins, Phase~2) are used
+    to identify proteins associated with MAL (differential expression,
+    GSEA, STRING network), build a proteomic risk score (adaptive LASSO),
+    test whether the score predicts emphysema progression (Phase~3
+    minus Phase~2 CT density), and quantify mediation of the MAL effect
+    through blood proteins (causal mediation analysis). Schematic to be
+    drawn manually.}
 \end{figure}
 
 % =============================================================================
-\section*{Figure 2 --- Protein Expression Landscape of MAL}
+\section*{Figure 2: Protein Expression Landscape of MAL}
 
 \subsection*{A. Volcano Plot (protein $\sim$ MAL)}
 
-\textbf{What we are looking at.}
-A volcano plot shows which proteins in the blood are statistically
-associated with MAL (Mechanically Affected Lung score, range 0.01--0.40;
-higher = more lung under destructive mechanical stress).
-Each dot is one protein.
+Each dot is one protein. The $x$-axis ($\hat\beta$) shows how much a
+protein changes per one-unit increase in MAL after adjusting for age,
+sex, race, smoking, pack-years, scanner, and ancestry PCs. Positive
+$\hat\beta$ = protein is higher with more mechanical lung stress;
+negative = lower. $\hat\beta$ is defined as the change in log$_2$
+protein per \emph{one-unit} increase in MAL. But MAL only ranges from
+0.01 to 0.40 in this cohort, so a one-unit change never actually
+occurs. To express the effect in realistic terms: multiplying
+$\hat\beta$ by the full MAL range ($0.40 - 0.01 = 0.39$) gives the
+maximum expected protein change across the entire observed spread of
+MAL. For Adiponectin: $0.27 \times 0.39 \approx 0.1$ log$_2$-unit
+shift from the lowest to the highest MAL subject. The $y$-axis
+($-\log_{10}$ FDR [false discovery rate]) is confidence: higher = more
+significant. Dots above the threshold (FDR $< 0.05$) are coloured red
+(enriched) or
+blue (depleted); grey dots did not reach significance.
+A dot far right and high = reliably elevated with more MAL.
+A dot far left and high = reliably lower with more MAL.
 
-\begin{itemize}
-  \item \textbf{$x$-axis ($\hat\beta$):} how much that protein changes
-    per one-unit increase in MAL, after adjusting for age, sex, race,
-    smoking, pack-years, scanner, and ancestry PCs.
-    A \emph{positive} $\hat\beta$ means the protein is \emph{higher}
-    in people with more mechanical lung stress.
-    A \emph{negative} $\hat\beta$ means it is \emph{lower}.
-    MAL ranges from 0.01 to 0.40, so a $\hat\beta$ of 0.27
-    (Adiponectin) means moving across the full MAL range would
-    correspond to a $0.27 \times 0.39 \approx 0.1$ log$_2$-unit
-    change --- a modest but detectable shift.
-  \item \textbf{$y$-axis ($-\log_{10}$ FDR):} confidence.
-    Higher = more significant. Dots above the horizontal threshold
-    (FDR $< 0.05$) are coloured: red = enriched, blue = depleted.
-    Grey dots did not reach significance.
-  \item \textbf{A dot far right and high up} is a protein that is both
-    strongly and reliably elevated in subjects with more MAL.
-  \item \textbf{A dot far left and high up} is a protein that is both
-    strongly and reliably lower in subjects with more MAL.
-\end{itemize}
-
-\textbf{How it was calculated.}
-For each of 4,979 proteins, the model is:
+\textbf{How calculated.}
+For each of 4,979 proteins:
 \[
   \log_2(\text{protein}) \;\sim\;
   \beta_{\text{MAL}} \cdot \texttt{meanmal}
@@ -228,25 +281,25 @@ For each of 4,979 proteins, the model is:
   + \text{pack-years} + \text{smoking}
   + \text{scanner} + \text{PC1--PC5}
 \]
-$\hat\beta_{\text{MAL}}$ tells us: for a one-unit increase in MAL,
-how much does the log\(_2\) protein level change, after adjusting for
-the listed covariates? FDR correction (Benjamini--Hochberg) across all
-4,979 tests.
+$\hat\beta_{\text{MAL}}$ = change in log$_2$ protein level per one-unit
+increase in MAL. FDR correction (Benjamini--Hochberg) across all 4,979
+tests.
 
-Each point is one protein. $x$-axis: MAL $\hat\beta$.
-$y$-axis: $-\log_{10}(\text{FDR})$.
-Red = FDR $<$ 0.05 and enriched; blue = FDR $<$ 0.05 and depleted;
-grey = not significant. Top 20 by FDR are labelled.
-
-\textbf{Key result.} 45 of 4,979 proteins were significant at FDR $<$
-0.05.
+\textbf{Key result.} 45 of 4,979 proteins significant at FDR $<$ 0.05.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.85\textwidth]{Figure2A_volcano.pdf}
-  \caption{Volcano plot: differential protein expression with MAL
-    ($n = 4{,}979$ proteins). Red = enriched, blue = depleted at
-    FDR $< 0.05$. Top 20 proteins labelled.}
+  \caption{Differential plasma protein expression associated with
+    Mechanically Affected Lung (MAL) score in COPDGene participants
+    ($n = 1{,}306$; 4,979 SomaScan proteins). Each point is one
+    protein. $x$-axis: regression coefficient ($\hat\beta$) for
+    log$_2$ protein level per unit MAL, adjusted for age, sex, race,
+    pack-years, smoking, CT scanner, and ancestry PCs (PC1--PC5).
+    $y$-axis: $-\log_{10}$(FDR; Benjamini--Hochberg). Red = FDR
+    $< 0.05$, positively associated; blue = FDR $< 0.05$, negatively
+    associated; grey = not significant. Top 20 proteins by FDR
+    labelled. 45 proteins reached FDR $< 0.05$.}
 \end{figure}
 
 Top enriched (higher with more MAL):
@@ -261,75 +314,52 @@ Top depleted (lower with more MAL):
 
 \subsection*{B. GSEA Barplot}
 
-\textbf{What we are looking at.}
-Instead of asking ``is this one protein associated with MAL?'', GSEA
-asks: ``does this entire biological \emph{pathway} show a coordinated
-shift with MAL?'' A pathway might have no single dramatically changed
-protein, but if most of its member proteins are all slightly higher in
-high-MAL subjects, that is a real biological signal.
+GSEA asks whether an entire biological pathway shows a coordinated shift
+with MAL, rather than asking protein by protein. Each bar is one
+significant pathway. Bar pointing right (NES $> 0$): the pathway's
+proteins are on average higher in plasma with higher MAL. Bar pointing
+left (NES $< 0$): lower. Longer bar = stronger shift. NES of $\pm 2$
+is a strong, consistent signal. padj is the Benjamini--Hochberg
+adjusted $p$-value across all pathways tested; only bars with padj $<
+0.05$ are shown.
 
-Each bar in the plot is one significant pathway.
-\begin{itemize}
-  \item \textbf{Bar pointing right (NES $> 0$, enriched):} the
-    pathway's proteins are, on average, \emph{higher} in plasma when
-    MAL is higher. This pathway is more active in people with more
-    mechanically stressed lung.
-  \item \textbf{Bar pointing left (NES $< 0$, depleted):} the
-    pathway's proteins are \emph{lower} in plasma when MAL is higher.
-    This pathway is suppressed in people with more mechanical stress.
-  \item \textbf{Longer bar = stronger shift.} NES of $\pm 2$ is a
-    strong, consistent signal across the gene set.
-  \item \textbf{padj:} how confident we are the shift is real, after
-    correcting for all pathways tested. Only bars with padj $< 0.05$
-    are shown.
-\end{itemize}
-\textbf{What the results mean here:} seven metabolic pathways
-(energy, fat, amino acids) are depleted --- meaning people with more
-MAL have lower levels of proteins involved in normal metabolism. Two
-immune pathways (chemokines, antimicrobial peptides) are enriched ---
-meaning the immune system is more active. Together this suggests
-mechanical lung stress is associated with a body-wide metabolic
-slowdown and immune activation, detectable in blood.
+\textbf{How calculated.}
+All 4,979 proteins ranked by their MAL $t$-statistic (most positively
+associated at top, most negatively at bottom). Gene sets tested:
+Hallmark, KEGG Legacy, Reactome (gene-set sizes 15--500).
 
-\textbf{How it was calculated.}
-All 4,979 proteins were ranked by their MAL $t$-statistic
-(most positively associated with MAL at the top, most negatively
-associated at the bottom). Gene sets from three collections were tested:
-Hallmark, KEGG Legacy, and Reactome (gene-set sizes 15--500).
+NES (Normalized Enrichment Score): measures whether a gene set's
+members concentrate at the top or bottom of the ranked list.
+NES $> 0$ = enriched in high-MAL subjects; NES $< 0$ = depleted.
+Normalization accounts for gene-set size so scores are comparable
+across pathways.
 
-\textbf{NES (Normalized Enrichment Score):} measures whether the
-members of a gene set are concentrated at the top or bottom of the
-ranked protein list.
-\begin{itemize}
-  \item NES $> 0$: the pathway's proteins tend to be \emph{higher} in
-    subjects with more MAL (enriched).
-  \item NES $< 0$: the pathway's proteins tend to be \emph{lower} in
-    subjects with more MAL (depleted).
-  \item The normalization accounts for gene-set size so scores are
-    comparable across pathways.
-\end{itemize}
+padj (adjusted $p$-value): fgsea tests hundreds of pathways at once.
+Without correction, many would appear significant by chance. padj is
+the Benjamini--Hochberg correction applied within each gene set
+collection (Hallmark, KEGG, Reactome separately). A padj $< 0.05$
+means fewer than 5\% of pathways at this threshold are expected to be
+false positives. Only pathways with padj $< 0.05$ are shown in the
+barplot.
 
-\textbf{padj:} Benjamini--Hochberg-adjusted $p$-value across all
-pathways tested within each collection. Threshold used: padj $< 0.05$.
-
-\textbf{What we are seeing:} 9 pathways reached significance.
-Seven are depleted (NES $< 0$) --- meaning proteins in these pathways
-are systemically lower in people with higher MAL. All seven are core
-metabolic pathways: energy production (oxidative phosphorylation,
-glycolysis), fat breakdown (fatty acid metabolism), amino acid handling,
-and drug/xenobiotic processing. Two pathways are enriched (NES $> 0$):
-chemokine receptor signalling and antimicrobial peptides, both
-inflammatory/immune in nature.
-
-In plain terms: higher MAL is associated with a systemic shift away
-from normal metabolic housekeeping and toward an inflammatory state.
-This is detectable in peripheral blood even though MAL is a lung
-structural measure.
+\textbf{Results.} 9 pathways significant (padj $< 0.05$). Seven are
+depleted (NES $< 0$): oxidative phosphorylation, glycolysis, fatty
+acid metabolism, amino acid handling, and xenobiotic processing. Two
+are enriched (NES $> 0$): chemokine receptor signalling and
+antimicrobial peptides (both inflammatory/immune). Higher MAL is
+associated with lower circulating metabolic proteins and higher
+inflammatory proteins.
 
 \begin{table}[H]
 \centering
-\caption*{\textbf{GSEA significant pathways} (padj $< 0.05$).
-  NES $> 0$ = enriched in high MAL; NES $< 0$ = depleted.}
+\caption*{\textbf{Gene Set Enrichment Analysis (GSEA): significant
+  pathways associated with MAL.} Proteins ranked by MAL $t$-statistic
+  ($n = 4{,}979$) and tested using \texttt{fgsea} against Hallmark,
+  KEGG Legacy, and Reactome gene sets (sizes 15--500). NES = Normalized
+  Enrichment Score; NES $> 0$ = pathway proteins higher in high-MAL
+  subjects (enriched); NES $< 0$ = lower (depleted). padj =
+  Benjamini--Hochberg adjusted $p$-value within each collection.
+  Only pathways with padj $< 0.05$ shown ($n = 9$).}
 \begin{tabular}{llrr}
 \toprule
 Collection & Pathway & NES & padj \\
@@ -350,165 +380,152 @@ Reactome  & Antimicrobial Peptides                   & $+1.94$ & 0.032 \\
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{Figure2B_GSEA.pdf}
-  \caption{GSEA barplot: 9 significant pathways (padj $< 0.05$)
-    faceted by collection. NES $< 0$ = depleted in high-MAL subjects.}
+  \caption{Gene Set Enrichment Analysis (GSEA) of MAL-associated plasma
+    proteins across Hallmark, KEGG Legacy, and Reactome collections.
+    Proteins ranked by MAL $t$-statistic ($n = 4{,}979$); bar length
+    represents the Normalized Enrichment Score (NES). NES $> 0$ =
+    enriched in high-MAL subjects; NES $< 0$ = depleted. Colour
+    indicates direction. Only pathways with Benjamini--Hochberg adjusted
+    $p < 0.05$ are shown ($n = 9$; 7 depleted, 2 enriched).}
 \end{figure}
 
 \subsection*{C. STRING Network}
 
-\textbf{What we are looking at.}
-A protein--protein interaction network for the 45 MAL-associated
-proteins. Each node is one protein. An edge (line) between two proteins
-means they are known to physically interact or co-function in humans,
-based on published data in the STRING database.
+Protein--protein interaction network for the 45 MAL-associated proteins.
+Each node is one protein. An edge between two proteins means they are
+known to physically interact or co-function in humans per STRING.
+A cluster of connected nodes indicates those proteins share a biological
+process. A hub (many edges) may be a central regulator in the MAL
+response. An isolated node had no high-confidence interactions with the
+other significant proteins. Edge confidence $\geq 400$ (medium
+confidence).
 
-\begin{itemize}
-  \item \textbf{A cluster of connected nodes} means those proteins work
-    together as part of the same biological process. If they all go up
-    or down with MAL, that cluster represents a coherent pathway being
-    affected --- stronger evidence than if each protein were isolated.
-  \item \textbf{A node with many edges (hub)} is a protein that
-    interacts with many others, suggesting it may be a central
-    regulator in the MAL response.
-  \item \textbf{An isolated node} (no edges) means that protein had no
-    known high-confidence interactions with other significant proteins
-    in this set. It may still be biologically relevant, just acting
-    independently.
-  \item \textbf{Edge thickness/colour} reflects interaction confidence
-    score ($\geq 400$ = medium confidence).
-\end{itemize}
-
-\textbf{How it was calculated.}
-The 45 FDR-significant proteins were submitted to the STRING~v11.5
-human database. Only interactions with a confidence score $\geq 400$
-(medium confidence) were drawn. Only PNG available ---
+\textbf{How calculated.}
+45 FDR-significant proteins submitted to STRING~v11.5 human database.
+Interactions with confidence $\geq 400$ drawn. Only PNG available:
 \texttt{STRINGdb::plot\_network()} does not support PDF output.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.80\textwidth]{Figure2C_STRING_network.png}
-  \caption{STRING protein--protein interaction network for 45
-    FDR-significant proteins (v11.5, score $\geq 400$).}
+  \caption{Protein--protein interaction network for the 45 plasma
+    proteins significantly associated with MAL (FDR $< 0.05$),
+    constructed using STRING v11.5 (human, species 9606). Nodes
+    represent proteins; edges indicate known or predicted functional
+    interactions with confidence score $\geq 400$ (medium confidence).
+    Isolated nodes had no qualifying interactions within this set.
+    Network image exported as PNG; PDF output is not supported by
+    \texttt{STRINGdb::plot\_network()}.}
 \end{figure}
 
 % =============================================================================
-\section*{Figure 3 --- Quartile Plot of Proteomic Risk Score}
+\section*{Figure 3: Quartile Plot of Proteomic Risk Score}
 
-\textbf{What we are looking at.}
-The subjects are divided into four groups by their Proteomic Risk Score
-(quartile 1 = lowest 25\% of PRS, quartile 4 = highest 25\%).
-Within each group, we ask: does a higher PRS within that group predict
-more emphysema progression?
-
-\begin{itemize}
-  \item \textbf{$x$-axis:} risk score quartile (1--4). Quartile 1 =
-    people with the least MAL-like protein profile in blood. Quartile 4
-    = people with the most MAL-like protein profile.
-  \item \textbf{$y$-axis ($\hat\beta$, HU/SD):} the regression
-    coefficient for PRS in that quartile subgroup. A positive value
-    means higher PRS within the quartile is associated with
-    \emph{less} negative progression (density loss smaller).
-    A negative value means higher PRS is associated with
-    \emph{more} progression (more density loss). Zero means no
-    association.
-  \item \textbf{Error bars:} 95\% confidence interval. If the bar
-    crosses the dashed zero line, the association is not statistically
-    significant in that quartile.
-  \item \textbf{What a consistent upward or downward trend across
-    quartiles would mean:} the PRS is linearly tracking disease
-    severity. If the bars are flat and all cross zero, the score is
-    not predicting progression at any level of risk.
-\end{itemize}
+Subjects divided into four groups by Proteomic Risk Score. Quartile 1 =
+lowest 25\% PRS (blood protein pattern least like high MAL). Quartile 4
+= highest 25\% (most like high MAL). The $y$-axis ($\hat\beta$, HU/SD)
+is the OLS (ordinary least squares) coefficient for PRS in that quartile subgroup: positive =
+higher PRS associated with less density loss; negative = more density
+loss; zero = no association. Error bars are 95\% CI (confidence interval); bars crossing the
+dashed zero line are not statistically significant.
 
 \textbf{Key result.} Effect sizes are small and confidence intervals
-cross zero in all quartiles --- the PRS does not predict emphysema
+cross zero in all quartiles. The PRS does not predict emphysema
 progression within any risk stratum ($p = 0.079$ overall).
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.65\textwidth]{Figure3_quartile_plot.pdf}
-  \caption{Quartile plot of the Proteomic Risk Score (PRS). Each point
-    is the OLS $\hat\beta$ (HU/SD) for the PRS within that quartile
-    subgroup, with 95\% CI. Dashed line at zero.}
+  \caption{Association between the Proteomic Risk Score (PRS) and
+    emphysema progression stratified by PRS quartile ($n = 1{,}306$).
+    Subjects were divided into quartiles by PRS (Q1 = lowest 25\%,
+    Q4 = highest 25\%). Within each quartile, OLS regression estimated
+    the $\hat\beta$ (HU per SD of PRS) for the PRS--progression
+    association, adjusted for age, sex, race, pack-years, smoking, and
+    CT scanner. Points show $\hat\beta$ with 95\% confidence intervals.
+    Dashed line at zero = no association. Overall PRS $p = 0.079$.}
 \end{figure}
 
 % =============================================================================
-\section*{Proteomic Risk Score --- Methods and Results}
+\section*{Proteomic Risk Score: Methods and Results}
 
-\textbf{What we are looking at.}
-A single number per person --- their Proteomic Risk Score (PRS) ---
-computed from a weighted combination of 378 plasma proteins.
-\begin{itemize}
-  \item \textbf{High PRS:} the person's blood protein pattern looks
-    similar to someone with high MAL (more mechanically stressed lung).
-  \item \textbf{Low PRS:} their protein pattern looks like someone with
-    low MAL (less mechanical stress).
-  \item \textbf{Test R$^2$ = 0.157:} the PRS explains 15.7\% of the
-    variation in MAL in held-out subjects. That means 84\% of what
-    makes MAL high or low is \emph{not} captured by the blood
-    proteome --- a meaningful but modest signal.
-  \item \textbf{Positive $\hat\beta$ in the weights table:} that
-    protein is higher in people with more MAL, and contributes
-    positively to the score.
-  \item \textbf{Negative $\hat\beta$:} that protein is lower in
-    people with more MAL, and pulls the score down.
-\end{itemize}
+The PRS is a weighted sum of 378 plasma proteins predicting MAL.
+High PRS = blood protein pattern similar to high MAL (more mechanically
+stressed lung). Low PRS = pattern similar to low MAL. Test $R^2 =
+0.157$: the PRS explains 15.7\% of MAL variation in held-out subjects;
+84\% is not captured by the blood proteome. Positive $\hat\beta$ in the
+weights = protein higher in people with more MAL. Negative $\hat\beta$
+= protein lower with more MAL.
 
-\textbf{How it was calculated.}
 \textbf{Data split.} 70/30 train/test (\texttt{set.seed(2024)}),
 $n_{\text{train}} = 914$, $n_{\text{test}} = 392$.
 
-\textbf{Step 1 --- Log2 transform all protein RFU values:}
+\textbf{Step 1: Log2 transform all protein RFU values}
 \[
   \tilde{x} = \log_2\!\bigl(\max(x,\; 10^{-6})\bigr)
 \]
-Transforms skewed RFU values to an approximately normal scale.
+Transforms skewed RFU values to approximately normal scale.
 The $10^{-6}$ floor prevents $\log(0)$ errors.
 
-\textbf{Step 2 --- Adaptive weights from ridge regression:}
+\textbf{Step 2: Adaptive weights from ridge regression}
 \[
   w_j = \frac{1}{|\hat\beta^{\text{ridge}}_j|}
 \]
-A ridge regression is first fit on the residualised MAL outcome
-(after projecting out the unpenalised covariates). Each protein $j$
-gets a weight inversely proportional to its ridge coefficient.
-Proteins that ridge already identified as informative get
-\emph{lower} penalty in the LASSO step; irrelevant proteins get
-\emph{higher} penalty. This gives the adaptive LASSO its oracle
-property --- it tends to select the true model.
+Ridge regression is fit on the residualised MAL outcome (after
+projecting out the unpenalised covariates). Each protein $j$ gets a
+weight inversely proportional to its ridge coefficient. Proteins that
+ridge identified as informative get lower penalty in the LASSO step;
+irrelevant proteins get higher penalty. This gives the adaptive LASSO
+its oracle property (tendency to select the true model).
 
-\textbf{Step 3 --- Adaptive LASSO selection:}
+\textbf{Step 3: Adaptive LASSO selection}
 \[
   \min_{\boldsymbol\beta} \left\|
     \mathbf{y} - \mathbf{X}\boldsymbol\beta
   \right\|^2
   + \lambda \sum_j w_j |\beta_j|
 \]
-$\lambda$ is chosen by 10-fold cross-validation ($\lambda_{\min}$).
+$\lambda$ chosen by 10-fold cross-validation ($\lambda_{\min}$).
+
 Covariates (age, sex, race, smoking, pack-years, scanner, PC1--PC5)
-are assigned $w_j = 0$ so they are never penalised.
+are assigned penalty factor $w_j = 0$. Here $w_j$ is not the
+covariate's coefficient; it is the multiplier on the L1 penalty
+term for that variable. When $w_j = 0$, the penalty contribution
+for that variable is $\lambda \times 0 \times |\beta_j| = 0$,
+meaning the LASSO applies no shrinkage to it. The covariate is
+estimated freely (like ordinary least squares) and is always
+retained in the model regardless of $\lambda$. Proteins, by
+contrast, have $w_j > 0$ (from the ridge pre-step), so their
+coefficients are penalised and can be shrunk to zero and dropped.
+This ensures confounders are always adjusted for and only proteins
+compete for selection.
 
-\textbf{Step 4 --- Post-selection OLS refit.}
-The selected proteins are refit by ordinary least squares.
-LASSO shrinks coefficients toward zero, so the LASSO $\hat\beta$
-values are biased. OLS on the selected set gives unbiased estimates,
-proper standard errors, confidence intervals, and $p$-values.
+\textbf{Step 4: Post-selection OLS refit.}
+Selected proteins refit by ordinary least squares. LASSO shrinks
+coefficients toward zero; OLS on the selected set gives unbiased
+estimates, proper SE (standard error), CI, and $p$-values.
 
-\textbf{Step 5 --- Compute the risk score for each subject:}
+\textbf{Step 5: Compute the risk score for each subject}
 \[
   \text{PRS}_i = \sum_{j \in \mathcal{S}}
     \hat\beta_j^{\text{OLS}} \cdot \tilde{x}_{ij}
 \]
 where $\mathcal{S}$ is the selected protein set.
-The PRS is then standardised to mean~0, SD~1 across the full cohort
-so that the regression coefficient has units of HU per SD of the
-score.
+Standardised to mean~0, SD~1 across the full cohort so the regression
+coefficient has units of HU per SD of the score.
 
 \textbf{Result.} 378 proteins selected. Test $R^2 = 0.157$.
 
 \begin{table}[H]
 \centering
-\caption*{\textbf{Top 20 PRS proteins} by $|\hat\beta|$ (OLS).}
+\caption*{\textbf{Top 20 proteins in the Proteomic Risk Score (PRS)
+  by absolute OLS coefficient.} The PRS was derived by adaptive LASSO
+  (ridge pre-step for penalty weights, 10-fold cross-validation at
+  $\lambda_{\min}$) predicting MAL score in the training set ($n =
+  914$, 70\%), followed by post-selection OLS refit. Of 4,979
+  proteins, 378 were selected (test $R^2 = 0.157$). $\hat\beta$ =
+  OLS coefficient (log$_2$ RFU change per unit MAL); 95\% CI and
+  $p$-values from post-selection OLS.}
 \small
 \begin{tabular}{llrrrl}
 \toprule
@@ -539,62 +556,48 @@ CNTN1   & Contactin-1              & $-0.107$ & $-0.229$ & $0.015$ & $0.086$ \\
 \end{table}
 
 % =============================================================================
-\section*{AIC Comparison --- PRS vs.\ Clinical Model}
+\section*{AIC Comparison: PRS vs.\ Clinical Model}
 
-\textbf{What we are looking at.}
-Does the blood protein score add anything useful for predicting
-emphysema progression, on top of what clinical variables already tell
-us? Three models are compared:
+Three models predicting emphysema progression are compared by AIC
+(Akaike Information Criterion: $-2\log L + 2k$). Lower AIC = better
+model. The clinical model is the reference; $\Delta$AIC for the other
+models is their AIC minus the clinical AIC. A $\Delta$AIC of $\leq -2$
+means the new model is meaningfully better than the clinical reference;
+a positive $\Delta$AIC means it is worse.
 
 \begin{itemize}
-  \item \textbf{Clinical model:} uses only age, sex, race, smoking
-    status, pack-years, and CT scanner type. This is the baseline ---
-    what a doctor already knows.
-  \item \textbf{PRS-only model:} uses only the protein score, baseline
-    lung density, and scanner. No clinical variables.
-  \item \textbf{Clinical + PRS model:} adds the protein score on top
-    of the clinical model. This is the key test --- does blood
-    proteomics help beyond standard care variables?
+  \item \textbf{Clinical:} age, sex, race, smoking status, pack-years,
+    CT scanner type.
+  \item \textbf{PRS only:} protein score, baseline lung density,
+    scanner.
+  \item \textbf{Clinical + PRS:} clinical variables plus the protein
+    score.
 \end{itemize}
 
-\textbf{Reading the AIC table:}
-\begin{itemize}
-  \item \textbf{Lower AIC = better model} (fits the data well without
-    using unnecessary parameters).
-  \item \textbf{$\Delta$AIC vs.\ Clinical = 0:} the clinical model is
-    the reference. All other models are compared to it.
-  \item \textbf{$\Delta$AIC $> 0$:} that model is \emph{worse} than
-    clinical alone --- it either fits poorly or uses too many
-    parameters for the gain.
-  \item \textbf{$\Delta$AIC $\leq -2$:} that model is meaningfully
-    \emph{better} than clinical alone. This is the threshold we need
-    to cross to claim the PRS adds value.
-  \item \textbf{PRS $\hat\beta = 0.42$ HU/SD, $p = 0.079$:} for each
-    1 SD increase in PRS in the combined model, emphysema progression
-    changes by 0.42 HU on average. Since normal progression SD is
-    $\sim$7 HU, this is a small, non-significant effect.
-\end{itemize}
+PRS $\hat\beta = 0.42$ HU/SD ($p = 0.079$) in the combined model: for
+each 1 SD increase in PRS, emphysema progression changes by 0.42 HU on
+average. Given a progression SD of $\sim$7 HU, this is a small,
+non-significant effect.
 
-\textbf{How it was calculated.}
-AIC (Akaike Information Criterion) measures model fit minus a penalty
-for the number of parameters. A lower AIC is better. A difference of
-$-2$ or more (i.e.\ the new model is at least 2 units lower) is
-considered a meaningful improvement. Three OLS models were fitted for
-emphysema progression.
-AIC improvement of $\leq -2$ considered meaningful.
-
-\textbf{Note:} BMI was not available in the phenotype file and is
-absent from the clinical model. This should be revisited when BMI data
-are available.
+\textbf{Note.} BMI was not available in the phenotype file and is absent
+from the clinical model. AIC comparisons may change once BMI is added.
 
 \begin{table}[H]
 \centering
-\caption*{\textbf{AIC comparison.}}
+\caption*{\textbf{Model comparison for predicting emphysema progression
+  by AIC (Akaike Information Criterion; lower = better fit).} Three OLS
+  models predicting $\Delta$CT lung density (HU) were compared.
+  $\Delta$AIC is relative to the clinical reference model; a difference
+  of $\leq -2$ indicates meaningful improvement over the clinical
+  reference. $\Delta$AIC = model AIC minus clinical AIC; positive
+  values indicate a worse fit than clinical alone. PRS = 378-protein
+  adaptive LASSO risk score, standardised to mean 0, SD 1. BMI was
+  unavailable and is excluded from the clinical model.}
 \begin{tabular}{lrr}
 \toprule
-Model & AIC & $\Delta$AIC vs.\ Clinical \\
+Model & AIC & $\Delta$AIC \\
 \midrule
-Clinical (age, sex, race, smoking, pack-years, scanner) & 8{,}815 & 0 \\
+Clinical (age, sex, race, smoking, pack-years, scanner) & 8{,}815 & Reference \\
 PRS only (PRS + baseline density + scanner)              & 8{,}848 & $+33.1$ \\
 Clinical + PRS                                           & 8{,}816 & $+0.8$ \\
 \bottomrule
@@ -610,52 +613,38 @@ The PRS-only model is substantially worse than clinical alone
 ($\Delta$AIC $= +33$).
 
 % =============================================================================
-\section*{Table 2 --- Causal Mediation}
+\section*{Table 2: Causal Mediation}
 
-\textbf{What we are looking at.}
-MAL causes emphysema progression. But does it do so \emph{through}
-the blood proteins, or through a completely separate path?
+The analysis decomposes the total effect of MAL on emphysema progression
+into a direct path (NDE) and a path through the blood protein score
+(NIE). NDE = how much of the MAL effect goes through pathways other than
+the protein score. NIE = how much goes through the protein score.
+All effects are in HU (Hounsfield Units), the CT density scale. More
+negative HU = lower lung density = more emphysema. A difference of 1 HU
+is a small change; the SD of progression in this cohort is $\sim$7 HU.
 
 \begin{itemize}
-  \item \textbf{NDE (Natural Direct Effect) = 19.7 HU, $p = 0.004$:}
-    the portion of MAL's effect on progression that does \emph{not}
-    go through the protein score. This is large and significant ---
-    meaning MAL strongly drives progression through mechanisms
-    independent of what we measured in blood. A one-unit increase in
-    MAL is associated with 19.7 HU more progression via the direct
-    path alone.
-  \item \textbf{NIE (Natural Indirect Effect) = $-0.12$ HU,
-    $p = 0.97$:} the portion of MAL's effect that \emph{does} go
-    through the protein score. This is essentially zero and
-    non-significant --- the proteins are not the mechanism by which
-    MAL causes progression.
+  \item \textbf{NDE = 19.7 HU, $p = 0.004$:} MAL drives progression
+    through mechanisms independent of the protein score. A one-unit
+    increase in MAL is associated with 19.7 HU more progression via the
+    direct path.
+  \item \textbf{NIE = $-0.12$ HU, $p = 0.97$:} essentially zero and
+    non-significant. The proteins are not the mechanism by which MAL
+    causes progression.
   \item \textbf{Proportion mediated = $-0.6\%$:} of the total MAL
-    effect on progression, only $-0.6\%$ is explained by the blood
-    protein pathway. Negative proportion can occur when the indirect
-    effect goes in the opposite direction to the total effect; here it
-    just reflects noise around zero.
-  \item \textbf{Total effect = 19.6 HU:} the sum of NDE + NIE. This
-    is the overall association of MAL with progression, and it is
-    almost entirely direct.
-  \item \textbf{In plain terms:} MAL damages the lung directly. The
-    protein changes we detect in blood are a reflection of that
-    process, not a driver of it.
+    effect, $-0.6\%$ is explained by the blood protein pathway. Negative
+    proportion arises when the indirect effect goes in the opposite
+    direction to the total effect; here it reflects noise around zero.
+  \item \textbf{Total effect = 19.6 HU:} NDE + NIE, almost entirely
+    direct.
 \end{itemize}
 
-\textbf{How it was calculated.}
-The pathway tested is: MAL $\to$ Proteomic Risk Score $\to$
-Emphysema Progression. Fitted using the \texttt{medflex} R package
-(natural effects framework) with robust sandwich standard errors.
+\textbf{How calculated.}
+Pathway tested: MAL $\to$ Proteomic Risk Score $\to$ Emphysema
+Progression. Fitted using the \texttt{medflex} R package (natural
+effects framework) with robust sandwich standard errors.
 
-The idea is to decompose the total effect of MAL on progression into:
-\begin{itemize}
-  \item \textbf{NDE} --- how much of the MAL effect operates through
-    pathways \emph{other than} the protein score (the direct path)
-  \item \textbf{NIE} --- how much operates \emph{through} the protein
-    score (the mediated path)
-\end{itemize}
-
-Two models are fitted internally by \texttt{medflex}:
+Two models fitted internally by \texttt{medflex}:
 \[
   \text{Imputation model: }
   \Delta\rho \;\sim\; \texttt{meanmal} \times \text{PRS} + \text{covariates}
@@ -664,21 +653,28 @@ Two models are fitted internally by \texttt{medflex}:
   \text{Natural effects model: }
   \Delta\rho \;\sim\; \texttt{meanmal}_0 + \texttt{meanmal}_1 + \text{covariates}
 \]
-$\texttt{meanmal}_0$ is the MAL value at which the mediator
-(PRS) is set (direct path); $\texttt{meanmal}_1$ is the actual MAL
-value driving the outcome (indirect path). The difference between them
-isolates the mediated portion.
+$\texttt{meanmal}_0$ is the MAL value at which the mediator (PRS) is
+set (direct path); $\texttt{meanmal}_1$ is the actual MAL value driving
+the outcome (indirect path). The difference between them isolates the
+mediated portion.
 
 \begin{table}[H]
 \centering
-\caption*{\textbf{Table 2.} Natural effects model results.}
+\caption*{\textbf{Table 2.} Causal mediation of the MAL--emphysema
+  progression relationship through the Proteomic Risk Score (PRS),
+  estimated using the natural effects framework (\texttt{medflex} R
+  package, robust sandwich SE, $n = 1{,}306$). NDE (Natural Direct
+  Effect) = portion of MAL's effect on $\Delta$CT lung density not
+  operating through the PRS. NIE (Natural Indirect Effect) = portion
+  operating through the PRS. Proportion mediated = NIE / total effect.
+  All effects in HU (Hounsfield Units; negative = more emphysema).}
 \begin{tabular}{lrrr}
 \toprule
 Effect & Estimate (HU) & $z$ & $p$ \\
 \midrule
 Natural Direct Effect (NDE)   & $+19.72$ & $2.92$ & $0.004$ \\
 Natural Indirect Effect (NIE) & $-0.12$  & $-0.04$ & $0.971$ \\
-Total effect                  & $+19.60$ & ---    & ---     \\
+Total effect                  & $+19.60$ & N/A    & N/A     \\
 Proportion mediated           & \multicolumn{3}{c}{$-0.6\%$} \\
 \bottomrule
 \end{tabular}
@@ -695,17 +691,16 @@ $= -0.6\%$).
 \subsection*{Supplementary Tables}
 
 \begin{itemize}
-  \item \textbf{S1 --- All differential expression results} (4,979
+  \item \textbf{S1: All differential expression results} (4,979
     proteins): gene, target, $\hat\beta$, SE, $t$, $p$, FDR. \\
     File: \texttt{MAL\_omics/mal\_de\_results.csv}
 
-  \item \textbf{S2 --- PRS weights} (378 proteins): gene, target,
+  \item \textbf{S2: PRS weights} (378 proteins): gene, target,
     $\hat\beta_{\text{OLS}}$, 95\% CI, $p$. \\
     File: \texttt{MAL\_omics/mal\_risk\_score\_weights.csv}
 
-  \item \textbf{S3 --- Per-protein mediation} (378 proteins in the
-    PRS, individual mediation for each): NDE, NIE, total, proportion
-    mediated, NIE $p$. \\
+  \item \textbf{S3: Per-protein mediation} (378 proteins): NDE, NIE,
+    total, proportion mediated, NIE $p$. \\
     File: \texttt{MAL\_omics/mal\_mediation\_supp.csv}
 
     Top 6 individual mediators (NIE $p < 0.05$): TREM2 (13\%,
@@ -718,18 +713,24 @@ $= -0.6\%$).
 \subsection*{Supplementary Figures}
 
 \begin{itemize}
-  \item \textbf{Supp Figure A --- Forest plot: proteins $\sim$ MAL.}
+  \item \textbf{Supp Figure A: Forest plot, proteins $\sim$ MAL.}
     Top 30 FDR-significant proteins, $\hat\beta$ for MAL association
     with 95\% CI.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{SuppFig_forest_MAL.pdf}
-  \caption*{Supplementary Figure A. Forest plot of top 30
-    differentially expressed proteins --- association with MAL.}
+  \caption*{\textbf{Supplementary Figure A.} Forest plot of the top 30
+    proteins most significantly associated with MAL score (ranked by
+    FDR). Points show OLS $\hat\beta$ (log$_2$ RFU per unit MAL) with
+    95\% CI, from the model: $\log_2(\text{protein}) \sim
+    \texttt{meanmal} + \text{age} + \text{sex} + \text{race} +
+    \text{pack-years} + \text{smoking} + \text{scanner} +
+    \text{PC1--PC5}$. Red = positively associated; blue = negatively
+    associated with MAL. Vertical dashed line at zero.}
 \end{figure}
 
-  \item \textbf{Supp Figure B --- Forest plot: proteins $\sim$
+  \item \textbf{Supp Figure B: Forest plot, proteins $\sim$
     emphysema progression.}
     Same 30 proteins, $\hat\beta$ for progression association
     (adjusted for baseline lung density and covariates).
@@ -737,9 +738,13 @@ $= -0.6\%$).
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.75\textwidth]{SuppFig_forest_progression.pdf}
-  \caption*{Supplementary Figure B. Forest plot of top 30
-    differentially expressed proteins --- association with emphysema
-    progression.}
+  \caption*{\textbf{Supplementary Figure B.} Forest plot of the same
+    top 30 MAL-associated proteins (ordered as in Supplementary
+    Figure~A) showing their association with emphysema progression
+    ($\Delta$CT lung density, HU). Points show OLS $\hat\beta$ with
+    95\% CI, adjusted for baseline lung density (\texttt{lung\_density\_vnb\_P2}),
+    age, sex, race, pack-years, smoking, scanner, and PC1--PC5.
+    Vertical dashed line at zero.}
 \end{figure}
 
 \end{itemize}
@@ -754,21 +759,13 @@ $= -0.6\%$).
     the correct column name.
 
   \item \textbf{BMI}: no BMI column found. Not included in Table~1 or
-    the clinical regression model. The clinical model therefore adjusts
-    for age, sex, race, smoking, and pack-years only. AIC comparisons
-    may change once BMI is added.
+    the clinical regression model. The clinical model adjusts for age,
+    sex, race, smoking, and pack-years only. AIC comparisons may change
+    once BMI is added.
 
   \item \textbf{Figure 1 (study schematic)}: not automatically
     generated. Needs to be drawn manually.
 
-  \item \textbf{STRING network PDF}: only PNG was saved. The
-    \texttt{STRINGdb} R package does not support direct PDF output via
-    \texttt{plot\_network()}; a PNG at 150 dpi was used instead.
-
-  \item \textbf{Table 1 values}: the exact means and percentages are
-    in the notebook HTML output (cell~9) but could not be embedded here
-    because the data are PHI and not committed. The LaTeX rows are
-    placeholders.
 \end{enumerate}
 
 \end{document}
