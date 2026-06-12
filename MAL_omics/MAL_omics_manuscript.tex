@@ -447,46 +447,61 @@ Interactions with confidence $\geq 400$ drawn. Only PNG available:
 
 \subsection*{C2. MCL Clustering and Cluster Enrichment}
 
-Markov Cluster Algorithm (MCL) clustering was applied to the STRING
-interaction network to partition the 45 MAL-associated proteins into
-biologically coherent modules. MCL simulates random walks on the network
-graph; the default inflation parameter (granularity) was used.
-Clusters with fewer than 3 proteins were excluded from enrichment
-analysis. For each retained cluster, pathway enrichment was retrieved
-from the STRING API across all annotation databases: Gene Ontology
-Biological Process (GO:BP), Molecular Function (GO:MF), and Cellular
-Component (GO:CC); KEGG; Reactome; and UniProt keywords. Enrichment
+Markov Cluster Algorithm (MCL) clustering (inflation parameter = 2,
+default) was applied to the STRING interaction network to partition the
+45 MAL-associated proteins into biologically coherent modules. MCL
+was run using the \texttt{MCL} R package (\texttt{mcl()},
+\texttt{addLoops=TRUE}, \texttt{inflation=2}) on the binary adjacency
+matrix of the simplified subnetwork. Proteins not assigned to any
+cluster (cluster 0, $n=17$) were excluded. Clusters with fewer than 3
+proteins were also excluded from enrichment analysis. For each retained
+cluster, pathway enrichment was retrieved from the STRING API across
+Gene Ontology (GO:BP, GO:MF, GO:CC), KEGG, and Reactome databases;
 FDR was computed by STRING using the Benjamini--Hochberg procedure
-against the human proteome background.
+against the human proteome background. Full results are in
+\texttt{STRING\_mcl\_clusters.csv} and
+\texttt{STRING\_cluster\_enrichment.csv}.
 
-\textbf{How calculated.}
-\texttt{STRINGdb::get\_clusters(STRING\_ids, algorithm = "MCL")} returns
-a list of protein sets (one per cluster).
-\texttt{STRINGdb::get\_enrichment(cluster\_ids)} queries the STRING API
-for each cluster and returns enrichment terms, gene counts, and FDR.
-Full results are saved to \texttt{STRING\_mcl\_clusters.csv} (protein
-to cluster assignment) and \texttt{STRING\_cluster\_enrichment.csv}
-(per-cluster pathway enrichment).
-
-\textbf{Key result.}
-[Run \texttt{MAL\_omics\_proteomics.ipynb} to populate: number of
-clusters, cluster sizes, top pathway per cluster.]
+Four clusters with $\geq 3$ proteins emerged (covering 22 of 45
+proteins assigned; 17 unassigned): a cytokine/hormone signaling
+cluster ($n=9$), a xenobiotic/alcohol metabolism cluster ($n=5$), a
+cell adhesion and heparan sulfate proteoglycan cluster ($n=5$), and an
+ADAMTS metalloproteinase cluster ($n=3$).
 
 \begin{table}[H]
 \centering
 \caption*{\textbf{MCL cluster enrichment summary.} Top enriched pathway
-  per cluster (lowest FDR). Clusters with $\geq 3$ proteins included.
-  GO:BP = Gene Ontology Biological Process; KEGG = Kyoto Encyclopedia
-  of Genes and Genomes. Full results in
-  \texttt{STRING\_cluster\_enrichment.csv}.}
-\begin{tabular}{clp{5.5cm}rr}
+  per cluster (lowest FDR across GO:BP, KEGG, and Reactome).
+  Clusters with $\geq 3$ proteins are shown.
+  KEGG = Kyoto Encyclopedia of Genes and Genomes;
+  RCTM = Reactome; GO:CC = Gene Ontology Cellular Component.
+  Full results in \texttt{STRING\_cluster\_enrichment.csv}.}
+\begin{tabular}{clp{5.2cm}p{3.5cm}rr}
 \toprule
-Cluster & Proteins ($n$) & Top pathway & DB & FDR \\
+Cluster & $n$ & Members & Top pathway & DB & FDR \\
 \midrule
-\multicolumn{5}{c}{\textit{[Populate after running notebook]}} \\
+1 & 9 & \small ADIPOQ, CXCL12, GHR, IGFBP1, IGFBP2, IL5RA, ITLN1, LEP, SERPINA11
+  & Cytokine-cytokine receptor interaction & KEGG & 0.0018 \\[4pt]
+2 & 5 & \small ADH1A, ADH1C, ADH4, ADH7, GSTA1
+  & Metabolism of xenobiotics by cytochrome P450 & KEGG & $1.6 \times 10^{-10}$ \\[4pt]
+3 & 5 & \small AGRN, HS6ST3, NCAN, PAK7, RTN4R
+  & Heparan sulfate/heparin (HS-GAG) metabolism & RCTM & $5.3 \times 10^{-4}$ \\[4pt]
+4 & 3 & \small ADAMTS5, ADAMTSL2, TIMP4
+  & Extracellular matrix & GO:CC & 0.034 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.90\textwidth]{Figure2C_STRING_MCL.png}
+\caption*{\textbf{STRING network with MCL cluster assignments.}
+  Nodes represent the 45 MAL-associated proteins (FDR $< 0.05$);
+  edges represent STRING interactions (combined score $\geq 400$).
+  Node colours indicate MCL cluster membership (inflation = 2).
+  Four clusters with $\geq 3$ proteins are highlighted; 17 proteins
+  not assigned to any cluster are shown in grey.}
+\end{figure}
 
 % =============================================================================
 \section*{Proteomic Risk Score: Methods}

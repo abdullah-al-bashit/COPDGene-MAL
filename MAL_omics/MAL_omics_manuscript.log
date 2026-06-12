@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  12 JUN 2026 00:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.3.8)  12 JUN 2026 09:30
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -527,42 +527,85 @@ File: Figure2C_STRING_network.png Graphic file (type png)
 Package pdftex.def Info: Figure2C_STRING_network.png  used on input line 437.
 (pdftex.def)             Requested size: 375.80544pt x 313.16568pt.
 
+Underfull \hbox (badness 10000) in paragraph at lines 483--484
+[]|\OT1/cmr/m/n/10 ADIPOQ, CXCL12, GHR,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 483--484
+\OT1/cmr/m/n/10 IGFBP1, IGFBP2, IL5RA,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 484--484
+[]|\OT1/cmr/m/n/10.95 Cytokine-cytokine
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 486--486
+[]|\OT1/cmr/m/n/10.95 Metabolism of
+ []
+
+
+Underfull \hbox (badness 4660) in paragraph at lines 486--486
+\OT1/cmr/m/n/10.95 xeno-bi-otics by cy-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 488--488
+[]|\OT1/cmr/m/n/10.95 Heparan sul-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 488--488
+\OT1/cmr/m/n/10.95 fate/heparin (HS-
+ []
+
+
 
 [9 <./Figure2C_STRING_network.png>]
+<Figure2C_STRING_MCL.png, id=93, 3011.25pt x 2409.0pt>
+File: Figure2C_STRING_MCL.png Graphic file (type png)
+<use Figure2C_STRING_MCL.png>
+Package pdftex.def Info: Figure2C_STRING_MCL.png  used on input line 497.
+(pdftex.def)             Requested size: 422.77664pt x 338.21342pt.
+
 
 [10]
-<Figure3_quartile_plot.pdf, id=101, 433.62pt x 361.35pt>
+
+[11 <./Figure2C_STRING_MCL.png>]
+<Figure3_quartile_plot.pdf, id=108, 433.62pt x 361.35pt>
 File: Figure3_quartile_plot.pdf Graphic file (type pdf)
 <use Figure3_quartile_plot.pdf>
-Package pdftex.def Info: Figure3_quartile_plot.pdf  used on input line 560.
+Package pdftex.def Info: Figure3_quartile_plot.pdf  used on input line 575.
 (pdftex.def)             Requested size: 305.33789pt x 254.45955pt.
 
 
-[11 <./Figure3_quartile_plot.pdf>]
+[12]
 
-[12{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.en
+[13 <./Figure3_quartile_plot.pdf>]
+
+[14{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.en
 c}]
-
-[13]
-<SuppFig_forest_MAL.pdf, id=130, 578.16pt x 722.7pt>
+<SuppFig_forest_MAL.pdf, id=135, 578.16pt x 722.7pt>
 File: SuppFig_forest_MAL.pdf Graphic file (type pdf)
 <use SuppFig_forest_MAL.pdf>
-Package pdftex.def Info: SuppFig_forest_MAL.pdf  used on input line 755.
+Package pdftex.def Info: SuppFig_forest_MAL.pdf  used on input line 770.
 (pdftex.def)             Requested size: 352.31625pt x 440.39423pt.
 
 
-[14]
-<SuppFig_forest_progression.pdf, id=136, 578.16pt x 722.7pt>
+[15]
+<SuppFig_forest_progression.pdf, id=143, 578.16pt x 722.7pt>
 File: SuppFig_forest_progression.pdf Graphic file (type pdf)
 <use SuppFig_forest_progression.pdf>
-Package pdftex.def Info: SuppFig_forest_progression.pdf  used on input line 773
+Package pdftex.def Info: SuppFig_forest_progression.pdf  used on input line 788
 .
 (pdftex.def)             Requested size: 352.31625pt x 440.39423pt.
 
 
-[15 <./SuppFig_forest_MAL.pdf>]
+[16 <./SuppFig_forest_MAL.pdf>]
 
-[16 <./SuppFig_forest_progression.pdf>] (./MAL_omics_manuscript.aux)
+[17 <./SuppFig_forest_progression.pdf>] (./MAL_omics_manuscript.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
@@ -575,13 +618,13 @@ Package rerunfilecheck Info: File `MAL_omics_manuscript.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 11928 strings out of 473190
- 189895 string characters out of 5715801
+ 11937 strings out of 473190
+ 190128 string characters out of 5715801
  604673 words of memory out of 5000000
- 34995 multiletter control sequences out of 15000+600000
+ 35002 multiletter control sequences out of 15000+600000
  565967 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,12n,79p,829b,505s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,12n,79p,829b,526s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><
@@ -589,15 +632,16 @@ Here is how much of TeX's memory you used:
 sr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
 /local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/lo
 cal/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/loc
-al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/loca
-l/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local
-/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/local/
-texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/local/te
-xlive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb>
-Output written on MAL_omics_manuscript.pdf (16 pages, 729992 bytes).
+al/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local
+/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/
+texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/t
+exlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/local/te
+xlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb></usr/local/texl
+ive/2025/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb>
+Output written on MAL_omics_manuscript.pdf (17 pages, 965243 bytes).
 PDF statistics:
- 230 PDF objects out of 1000 (max. 8388607)
- 174 compressed objects within 2 object streams
- 55 named destinations out of 1000 (max. 500000)
- 31 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 242 PDF objects out of 1000 (max. 8388607)
+ 181 compressed objects within 2 object streams
+ 57 named destinations out of 1000 (max. 500000)
+ 36 words of extra memory for PDF output out of 10000 (max. 10000000)
 
