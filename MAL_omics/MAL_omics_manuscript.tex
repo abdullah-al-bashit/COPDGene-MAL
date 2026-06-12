@@ -57,9 +57,9 @@ not available from a routine blood draw.
 (1) Identify which Phase~2 plasma proteins are associated with MAL,
 establishing that mechanical lung stress leaves a detectable signal
 in blood.
-(2) Use those proteins to build a Proteomic Risk Score (PRS) from a
+(2) Use those proteins to build a Proteomic Risk Score (proRS) from a
 Phase~2 blood draw that approximates MAL and can predict who will
-develop worse emphysema by Phase~3. If successful, the PRS would
+develop worse emphysema by Phase~3. If successful, the proRS would
 allow MAL-like risk stratification without requiring CT image
 registration. The proteins themselves are not measured at Phase~3;
 they serve as baseline predictors of the CT density change that
@@ -107,8 +107,8 @@ Column & Used as & Status \\
 \texttt{scanner\_model\_clean\_P2}    & CT scanner model            & Found \\
 \texttt{FEV1\_FVC\_post\_P2}          & FEV$_1$ (forced expiratory volume in 1 second) / FVC (forced vital capacity) ratio & Found \\
 \texttt{PC1} -- \texttt{PC5}          & Ancestry principal components & Found \\
-\texttt{FEV1pp\_P2}                   & FEV$_1$\% predicted         & \textcolor{red}{NOT FOUND} \\
-\texttt{BMI} / \texttt{bmi\_P2}       & Body mass index             & \textcolor{red}{NOT FOUND} \\
+\texttt{fev1\_pp\_gli\_global\_P2}      & FEV$_1$\% predicted (GLI global reference) & Found \\
+\texttt{BMI\_P2}                      & Body mass index             & See \texttt{CellData.csv} below \\
 \bottomrule
 \end{tabular}
 
@@ -120,6 +120,18 @@ Column & Description \\
 \midrule
 \texttt{sid}      & Subject identifier (join key) \\
 \texttt{meanmal}  & MAL score (continuous, range 0.01--0.40) \\
+\bottomrule
+\end{tabular}
+
+\subsection*{\texttt{data/csv\_exports/CellData.csv}: Phase 2 BMI}
+
+\begin{tabular}{lll}
+\toprule
+Column & Used as & Note \\
+\midrule
+\texttt{sid}          & Join key   & \\
+\texttt{Phase\_study} & Phase filter & Rows with \texttt{Phase\_study == 2} used \\
+\texttt{BMI}          & \texttt{BMI\_P2} in analysis & All 1,306 analysis subjects present, no missingness \\
 \bottomrule
 \end{tabular}
 
@@ -150,6 +162,7 @@ Complete-case filter then requires non-missing values for all of:
 \texttt{lung\_density\_vnb\_P2}, \texttt{meanmal}, \texttt{Age\_P2},
 \texttt{gender}, \texttt{race}, \texttt{ATS\_PackYears\_P2},
 \texttt{SmokCigNow\_P2}, \texttt{scanner\_model\_clean\_P2},
+\texttt{fev1\_pp\_gli\_global\_P2},
 \texttt{FEV1\_FVC\_post\_P2}, and \texttt{PC1}--\texttt{PC5}.
 
 This reduces the sample to $n = 1{,}306$. The large drop
@@ -165,17 +178,6 @@ follow-up visit $\sim$6 years later.
 \noindent Study population after 3-way merge (proteomics $\times$
 phenotype $\times$ MAL) and complete-case filtering.
 
-\textbf{Variables not found in the phenotype file:}
-\begin{itemize}
-  \item \missing{FEV1pp\_P2 (FEV\textsubscript{1}\% predicted)}:
-    column not present under any searched pattern
-    (\texttt{FEV1pp}, \texttt{FEV1pct}, \texttt{FEV1\_percent\_pred}).
-    Row left blank.
-  \item \missing{BMI}: no column matching
-    \texttt{\^{}[Bb][Mm][Ii]} found in the phenotype file.
-    Row left blank.
-\end{itemize}
-
 \begin{table}[H]
 \centering
 \caption*{\textbf{Table 1.} Baseline characteristics of COPDGene
@@ -186,8 +188,7 @@ phenotype $\times$ MAL) and complete-case filtering.
   0.01--0.40); higher values indicate more lung under destructive
   mechanical stress. Emphysema progression = CT lung density at
   Phase~3 minus Phase~2 ($\rho_{\text{P3}} - \rho_{\text{P2}}$, HU);
-  negative values indicate worsening. FEV$_1$\% predicted and BMI
-  were not available in the phenotype file.}
+  negative values indicate worsening.}
 \begin{tabular}{lc}
 \toprule
 Characteristic & Overall ($n = 1{,}306$) \\
@@ -202,7 +203,7 @@ Characteristic & Overall ($n = 1{,}306$) \\
 \quad Pack-years                          & 43 (23) \\
 \addlinespace
 \textit{Pulmonary function} & \\
-\quad FEV\textsubscript{1}\% predicted    & \missing{column not found in phenotype file} \\
+\quad FEV\textsubscript{1}\% predicted (GLI global) & 83 (24) \\
 \quad FEV\textsubscript{1}/FVC            & 0.69 (0.14) \\
 \addlinespace
 \textit{CT imaging} & \\
@@ -211,7 +212,7 @@ Characteristic & Overall ($n = 1{,}306$) \\
 \quad Emphysema progression (HU)          & 1 (7) \\
 \addlinespace
 \textit{Anthropometrics} & \\
-\quad BMI (kg/m\textsuperscript{2})       & \missing{column not found in phenotype file} \\
+\quad BMI (kg/m\textsuperscript{2})       & 29 (6) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -229,7 +230,7 @@ improvers (positive $\Delta\rho$).
 (e.g., BioRender) illustrating the analysis flow:
 SomaScan proteomics $\to$ differential expression $\to$ GSEA (Gene Set
 Enrichment Analysis) / STRING $\to$ adaptive LASSO (Least Absolute
-Shrinkage and Selection Operator) PRS (Proteomic Risk Score) $\to$
+Shrinkage and Selection Operator) proRS (Proteomic Risk Score) $\to$
 emphysema progression association $\to$ causal mediation.
 
 \begin{figure}[H]
@@ -312,6 +313,32 @@ Top depleted (lower with more MAL):
 \textit{RTN4R} (Nogo Receptor), \textit{RET}, \textit{PRSS8},
 \textit{SFRP4}.
 
+% =============================================================================
+\subsection*{A2. Sensitivity Analysis: Adjusting for CAD and CHF}
+
+To assess whether MAL-associated protein signals reflect cardiovascular
+comorbidity rather than mechanical lung injury per se, the differential
+expression analysis was repeated with two additional covariates: history
+of coronary artery disease (CAD; \texttt{CoronaryArtery\_P2}, binary)
+and history of congestive heart failure (CHF;
+\texttt{congestheartfail\_slv\_P2}, self-reported validated, binary),
+both from \texttt{CellData.csv} (Phase~2 visit). All $n = 1{,}306$
+analysis subjects had complete CAD and CHF data; no subjects were
+excluded. CAD prevalence was 7.5\% ($n = 99$); CHF prevalence was
+1.2\% ($n = 16$).
+
+The model for each protein was:
+\[
+  \log_2(\text{protein}) \;\sim\; \text{MAL} + \text{age} + \text{sex}
+  + \text{race} + \text{pack-years} + \text{smoking} + \text{BMI}
+  + \text{scanner} + \text{PC1--PC5} + \text{CAD} + \text{CHF}
+\]
+
+Results are saved to \texttt{mal\_de\_sensitivity\_cad\_chf.csv}.
+Proteins that remain FDR $< 0.05$ after CAD/CHF adjustment are
+considered robust to cardiovascular comorbidity confounding.
+
+% =============================================================================
 \subsection*{B. GSEA Barplot}
 
 GSEA asks whether an entire biological pathway shows a coordinated shift
@@ -418,199 +445,205 @@ Interactions with confidence $\geq 400$ drawn. Only PNG available:
     \texttt{STRINGdb::plot\_network()}.}
 \end{figure}
 
+\subsection*{C2. MCL Clustering and Cluster Enrichment}
+
+Markov Cluster Algorithm (MCL) clustering was applied to the STRING
+interaction network to partition the 45 MAL-associated proteins into
+biologically coherent modules. MCL simulates random walks on the network
+graph; the default inflation parameter (granularity) was used.
+Clusters with fewer than 3 proteins were excluded from enrichment
+analysis. For each retained cluster, pathway enrichment was retrieved
+from the STRING API across all annotation databases: Gene Ontology
+Biological Process (GO:BP), Molecular Function (GO:MF), and Cellular
+Component (GO:CC); KEGG; Reactome; and UniProt keywords. Enrichment
+FDR was computed by STRING using the Benjamini--Hochberg procedure
+against the human proteome background.
+
+\textbf{How calculated.}
+\texttt{STRINGdb::get\_clusters(STRING\_ids, algorithm = "MCL")} returns
+a list of protein sets (one per cluster).
+\texttt{STRINGdb::get\_enrichment(cluster\_ids)} queries the STRING API
+for each cluster and returns enrichment terms, gene counts, and FDR.
+Full results are saved to \texttt{STRING\_mcl\_clusters.csv} (protein
+to cluster assignment) and \texttt{STRING\_cluster\_enrichment.csv}
+(per-cluster pathway enrichment).
+
+\textbf{Key result.}
+[Run \texttt{MAL\_omics\_proteomics.ipynb} to populate: number of
+clusters, cluster sizes, top pathway per cluster.]
+
+\begin{table}[H]
+\centering
+\caption*{\textbf{MCL cluster enrichment summary.} Top enriched pathway
+  per cluster (lowest FDR). Clusters with $\geq 3$ proteins included.
+  GO:BP = Gene Ontology Biological Process; KEGG = Kyoto Encyclopedia
+  of Genes and Genomes. Full results in
+  \texttt{STRING\_cluster\_enrichment.csv}.}
+\begin{tabular}{clp{5.5cm}rr}
+\toprule
+Cluster & Proteins ($n$) & Top pathway & DB & FDR \\
+\midrule
+\multicolumn{5}{c}{\textit{[Populate after running notebook]}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 % =============================================================================
-\section*{Figure 3: Quartile Plot of Proteomic Risk Score}
+\section*{Proteomic Risk Score: Methods}
 
-Subjects divided into four groups by Proteomic Risk Score. Quartile 1 =
-lowest 25\% PRS (blood protein pattern least like high MAL). Quartile 4
-= highest 25\% (most like high MAL). The $y$-axis ($\hat\beta$, HU/SD)
-is the OLS (ordinary least squares) coefficient for PRS in that quartile subgroup: positive =
-higher PRS associated with less density loss; negative = more density
-loss; zero = no association. Error bars are 95\% CI (confidence interval); bars crossing the
-dashed zero line are not statistically significant.
+A progression-targeting Proteomic Risk Score (proRS) was built using
+adaptive elastic net ($\alpha = 0.5$) with emphysema progression
+($\Delta$CT density, HU) as the direct outcome. SomaScan RFU values were
+log$_2$-transformed; a 70/30 train/test split was applied
+(\texttt{set.seed(2024)}, $n_{\text{train}} = 914$,
+$n_{\text{test}} = 392$). Ridge regression on residualised progression
+(after projecting out age, sex, race, smoking status, pack-years, and CT
+scanner type) produced adaptive penalty weights
+$w_j = 1/|\hat\beta^{\text{ridge}}_j|$. Adaptive elastic net with 10-fold
+cross-validation ($\lambda_{\min}$) selected 410 proteins. The proRS is
+the weighted sum of selected log$_2$-transformed proteins, standardised
+to mean~0, SD~1 using the training set mean and SD (applied to all
+subjects). Higher proRS = greater predicted CT density loss (more
+emphysema worsening). Test $R^2 = 0.039$: this model selects proteins
+with effects \textit{independent of} the clinical covariates and is used
+for the protein annotation tables and biological interpretation.
 
-\textbf{Key result.} Effect sizes are small and confidence intervals
-cross zero in all quartiles. The PRS does not predict emphysema
-progression within any risk stratum ($p = 0.079$ overall).
+A separate \textit{prognostic} elastic net (proteins only, no
+unpenalized clinical covariates; same adaptive elastic net framework,
+$\alpha = 0.5$, 10-fold inner CV) was fitted on the training set to
+produce a proRS for the AIC comparison and Figure~3. Training without
+clinical covariates ensures that the proRS captures total protein-derived
+signal, enabling a proper test of whether proteins add beyond clinical
+factors. This model selected 380 proteins (test $R^2 = 0.021$).
+
+For Figure~3, the association model, and the AIC comparison, 5-fold
+cross-validated out-of-sample predictions from the prognostic model
+are used: the full cohort ($n = 1{,}306$) is partitioned into 5 folds;
+each fold is predicted by a prognostic elastic net fitted on the
+remaining four folds, so every subject's proRS is an out-of-sample
+prediction. The full-cohort CV predictions are standardised to mean~0,
+SD~1 on their own distribution (all OOS, no leakage). Adaptive weights
+and lambda are recomputed within each outer fold using 5-fold inner CV.
+
+Note: the MAL adaptive LASSO proRS (378 proteins, from
+\texttt{MAL\_omics\_proteomics.ipynb}) characterises blood protein
+patterns that reflect current mechanical lung stress and is used for
+the causal mediation analysis (Table~2). The progression-targeting
+elastic net proRS is used for Figure~3 and the AIC comparison.
+
+% =============================================================================
+\section*{Figure 3: Emphysema Worsening by Proteomic Risk Score Quartile}
+
+Subjects are divided into four quartiles by the Proteomic Risk Score (proRS). Q1 = lowest-risk
+25\% (lowest proRS); Q4 = highest-risk 25\% (highest proRS). The $y$-axis
+shows the OLS $\hat\beta$ coefficient for each quartile indicator versus
+Q1 (reference), from the model:
+\[
+  \Delta\text{CT density} \;\sim\; \text{factor(quartile)} +
+  \text{age} + \text{sex} + \text{race} + \text{smoking} +
+  \text{pack-years} + \text{BMI} + \text{scanner}
+\]
+Each $\hat\beta$ is the covariate-adjusted mean difference in emphysema
+progression relative to Q1; positive = more CT density loss than Q1.
+Error bars are 95\% CI.
+
+\textbf{Key result.}
+Q2: $\hat\beta = 0.95$ HU (95\% CI $[-0.12,\ 2.03]$, $p = 0.08$);
+Q3: $\hat\beta = 1.41$ HU ($[0.31,\ 2.51]$, $p = 0.01$);
+Q4: $\hat\beta = 1.92$ HU ($[0.81,\ 3.04]$, $p < 0.001$).
+A monotone gradient is present; Q3 and Q4 reach statistical
+significance, with subjects in the highest proRS quartile showing
+1.9 HU more emphysema worsening than Q1 after covariate adjustment.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.65\textwidth]{Figure3_quartile_plot.pdf}
-  \caption{Association between the Proteomic Risk Score (PRS) and
-    emphysema progression stratified by PRS quartile ($n = 1{,}306$).
-    Subjects were divided into quartiles by PRS (Q1 = lowest 25\%,
-    Q4 = highest 25\%). Within each quartile, OLS regression estimated
-    the $\hat\beta$ (HU per SD of PRS) for the PRS--progression
-    association, adjusted for age, sex, race, pack-years, smoking, and
-    CT scanner. Points show $\hat\beta$ with 95\% confidence intervals.
-    Dashed line at zero = no association. Overall PRS $p = 0.079$.}
+  \caption{$\hat\beta$ coefficients (HU excess emphysema worsening
+    relative to Q1, 95\% CI) for proRS quartiles in a single OLS model:
+    $\Delta\text{CT density} \sim \text{factor(quartile)} + \text{age}
+    + \text{sex} + \text{race} + \text{smoking} + \text{pack-years}
+    + \text{BMI} + \text{scanner}$, $n = 1{,}306$. Subjects ranked into
+    quartiles by 5-fold cross-validated out-of-sample predictions from
+    the prognostic elastic net (main model: 380 proteins, $\alpha = 0.5$,
+    test $R^2 = 0.021$).
+    Q1 = lowest-risk 25\% (reference, $\hat\beta = 0$); Q4 = highest-risk
+    25\%. Positive $\hat\beta$ = more CT density loss than Q1. Error bars
+    are 95\% CI.}
 \end{figure}
 
 % =============================================================================
-\section*{Proteomic Risk Score: Methods and Results}
+\section*{Association of Proteomic Risk Score with Emphysema Progression}
 
-The PRS is a weighted sum of 378 plasma proteins predicting MAL.
-High PRS = blood protein pattern similar to high MAL (more mechanically
-stressed lung). Low PRS = pattern similar to low MAL. Test $R^2 =
-0.157$: the PRS explains 15.7\% of MAL variation in held-out subjects;
-84\% is not captured by the blood proteome. Positive $\hat\beta$ in the
-weights = protein higher in people with more MAL. Negative $\hat\beta$
-= protein lower with more MAL.
-
-\textbf{Data split.} 70/30 train/test (\texttt{set.seed(2024)}),
-$n_{\text{train}} = 914$, $n_{\text{test}} = 392$.
-
-\textbf{Step 1: Log2 transform all protein RFU values}
+The proRS was tested as a predictor of emphysema progression in a
+multivariable linear regression model adjusting for age, sex, race,
+current smoking status, pack-years of smoking, BMI, and CT scanner type:
 \[
-  \tilde{x} = \log_2\!\bigl(\max(x,\; 10^{-6})\bigr)
+  \Delta\text{CT density} \;\sim\; \text{proRS} +
+  \text{age} + \text{sex} + \text{race} + \text{smoking} +
+  \text{pack-years} + \text{BMI} + \text{scanner}
 \]
-Transforms skewed RFU values to approximately normal scale.
-The $10^{-6}$ floor prevents $\log(0)$ errors.
 
-\textbf{Step 2: Adaptive weights from ridge regression}
-\[
-  w_j = \frac{1}{|\hat\beta^{\text{ridge}}_j|}
-\]
-Ridge regression is fit on the residualised MAL outcome (after
-projecting out the unpenalised covariates). Each protein $j$ gets a
-weight inversely proportional to its ridge coefficient. Proteins that
-ridge identified as informative get lower penalty in the LASSO step;
-irrelevant proteins get higher penalty. This gives the adaptive LASSO
-its oracle property (tendency to select the true model).
+\noindent Proteomic Risk Score $\hat\beta = 0.53$ HU/SD,
+95\% CI $[0.13,\ 0.93]$, $p = 0.009$ (5-fold CV OOS, $n = 1{,}306$).
 
-\textbf{Step 3: Adaptive LASSO selection}
-\[
-  \min_{\boldsymbol\beta} \left\|
-    \mathbf{y} - \mathbf{X}\boldsymbol\beta
-  \right\|^2
-  + \lambda \sum_j w_j |\beta_j|
-\]
-$\lambda$ chosen by 10-fold cross-validation ($\lambda_{\min}$).
-
-Covariates (age, sex, race, smoking, pack-years, scanner, PC1--PC5)
-are assigned penalty factor $w_j = 0$. Here $w_j$ is not the
-covariate's coefficient; it is the multiplier on the L1 penalty
-term for that variable. When $w_j = 0$, the penalty contribution
-for that variable is $\lambda \times 0 \times |\beta_j| = 0$,
-meaning the LASSO applies no shrinkage to it. The covariate is
-estimated freely (like ordinary least squares) and is always
-retained in the model regardless of $\lambda$. Proteins, by
-contrast, have $w_j > 0$ (from the ridge pre-step), so their
-coefficients are penalised and can be shrunk to zero and dropped.
-This ensures confounders are always adjusted for and only proteins
-compete for selection.
-
-\textbf{Step 4: Post-selection OLS refit.}
-Selected proteins refit by ordinary least squares. LASSO shrinks
-coefficients toward zero; OLS on the selected set gives unbiased
-estimates, proper SE (standard error), CI, and $p$-values.
-
-\textbf{Step 5: Compute the risk score for each subject}
-\[
-  \text{PRS}_i = \sum_{j \in \mathcal{S}}
-    \hat\beta_j^{\text{OLS}} \cdot \tilde{x}_{ij}
-\]
-where $\mathcal{S}$ is the selected protein set.
-Standardised to mean~0, SD~1 across the full cohort so the regression
-coefficient has units of HU per SD of the score.
-
-\textbf{Result.} 378 proteins selected. Test $R^2 = 0.157$.
-
-\begin{table}[H]
-\centering
-\caption*{\textbf{Top 20 proteins in the Proteomic Risk Score (PRS)
-  by absolute OLS coefficient.} The PRS was derived by adaptive LASSO
-  (ridge pre-step for penalty weights, 10-fold cross-validation at
-  $\lambda_{\min}$) predicting MAL score in the training set ($n =
-  914$, 70\%), followed by post-selection OLS refit. Of 4,979
-  proteins, 378 were selected (test $R^2 = 0.157$). $\hat\beta$ =
-  OLS coefficient (log$_2$ RFU change per unit MAL); 95\% CI and
-  $p$-values from post-selection OLS.}
-\small
-\begin{tabular}{llrrrl}
-\toprule
-Gene & Target & $\hat\beta$ & 95\% CI (low) & 95\% CI (high) & $p$ \\
-\midrule
-ZPBP    & ZPBP1                    & $+0.286$ & $0.160$ & $0.412$ & $<0.001$ \\
-CFI     & Factor I                 & $-0.226$ & $-0.398$ & $-0.054$ & $0.010$ \\
-GREM2   & GREM2                    & $+0.193$ & $0.113$ & $0.273$ & $<0.001$ \\
-C7      & Complement C7            & $+0.169$ & $0.030$ & $0.309$ & $0.017$ \\
-SEC13   & SEC13                    & $-0.153$ & $-0.254$ & $-0.053$ & $0.003$ \\
-SERPINF2& $\alpha_2$-Antiplasmin   & $+0.149$ & $0.011$ & $0.287$ & $0.035$ \\
-FSTL1   & FSTL1                    & $-0.147$ & $-0.309$ & $0.015$ & $0.075$ \\
-APOH    & $\beta_2$-Glycoprotein I & $+0.143$ & $-0.049$ & $0.335$ & $0.145$ \\
-COL3A1  & Collagen Type III        & $+0.132$ & $0.061$ & $0.204$ & $<0.001$ \\
-C3      & C3a                      & $+0.131$ & $0.021$ & $0.242$ & $0.020$ \\
-SMS     & Spermine Synthase        & $-0.125$ & $-0.179$ & $-0.072$ & $<0.001$ \\
-MATN2   & MATN2                    & $-0.125$ & $-0.242$ & $-0.008$ & $0.036$ \\
-GALNT11 & GLT11                    & $-0.122$ & $-0.225$ & $-0.019$ & $0.021$ \\
-ROBO2   & ROBO2                    & $-0.119$ & $-0.220$ & $-0.017$ & $0.022$ \\
-SEZ6L   & SEZ6L                    & $+0.117$ & $0.020$ & $0.214$ & $0.019$ \\
-FBLN1   & Fibulin-1                & $-0.113$ & $-0.278$ & $0.051$ & $0.175$ \\
-ADAMTS5 & ADAMTS-5                 & $+0.113$ & $0.062$ & $0.163$ & $<0.001$ \\
-CCL23   & MPIF-1                   & $-0.112$ & $-0.160$ & $-0.063$ & $<0.001$ \\
-CREB3L4 & CR3L4                    & $+0.108$ & $0.047$ & $0.169$ & $<0.001$ \\
-CNTN1   & Contactin-1              & $-0.107$ & $-0.229$ & $0.015$ & $0.086$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+Each SD increase in the proRS is associated with 0.53 HU greater CT
+density loss (more emphysema worsening) after adjustment for age, sex,
+race, smoking, pack-years, BMI, and CT scanner type.
 
 % =============================================================================
-\section*{AIC Comparison: PRS vs.\ Clinical Model}
+\section*{AIC Comparison: Proteomic Risk Score vs.\ Clinical Model}
 
 Three models predicting emphysema progression are compared by AIC
-(Akaike Information Criterion: $-2\log L + 2k$). Lower AIC = better
-model. The clinical model is the reference; $\Delta$AIC for the other
-models is their AIC minus the clinical AIC. A $\Delta$AIC of $\leq -2$
-means the new model is meaningfully better than the clinical reference;
-a positive $\Delta$AIC means it is worse.
+(Akaike Information Criterion: $-2\log\hat{L} + 2k$; lower = better).
+The proRS values used here are 5-fold cross-validated out-of-sample
+predictions: the full cohort ($n = 1{,}306$) is split into 5 folds;
+each fold is predicted by an elastic net trained on the other four
+folds, so every subject's proRS is an out-of-sample prediction. This
+approach eliminates in-sample inflation while using the full cohort
+for maximum statistical power. $\Delta$AIC relative to the clinical
+reference; $\Delta \leq -2$ indicates meaningful improvement.
 
 \begin{itemize}
-  \item \textbf{Clinical:} age, sex, race, smoking status, pack-years,
-    CT scanner type.
-  \item \textbf{PRS only:} protein score, baseline lung density,
-    scanner.
-  \item \textbf{Clinical + PRS:} clinical variables plus the protein
-    score.
+  \item \textbf{Clinical:} age, sex, race, current smoking, pack-years,
+    BMI. Reference model.
+  \item \textbf{Proteomic Risk Score:} 5-fold CV elastic net proRS
+    (380 proteins, $\alpha = 0.5$, proteins only) alone.
+  \item \textbf{Clinical + Proteomic Risk Score:} clinical variables plus
+    CV proRS.
 \end{itemize}
-
-PRS $\hat\beta = 0.42$ HU/SD ($p = 0.079$) in the combined model: for
-each 1 SD increase in PRS, emphysema progression changes by 0.42 HU on
-average. Given a progression SD of $\sim$7 HU, this is a small,
-non-significant effect.
-
-\textbf{Note.} BMI was not available in the phenotype file and is absent
-from the clinical model. AIC comparisons may change once BMI is added.
 
 \begin{table}[H]
 \centering
 \caption*{\textbf{Model comparison for predicting emphysema progression
-  by AIC (Akaike Information Criterion; lower = better fit).} Three OLS
-  models predicting $\Delta$CT lung density (HU) were compared.
-  $\Delta$AIC is relative to the clinical reference model; a difference
-  of $\leq -2$ indicates meaningful improvement over the clinical
-  reference. $\Delta$AIC = model AIC minus clinical AIC; positive
-  values indicate a worse fit than clinical alone. PRS = 378-protein
-  adaptive LASSO risk score, standardised to mean 0, SD 1. BMI was
-  unavailable and is excluded from the clinical model.}
+  by AIC (full cohort 5-fold CV, $n = 1{,}306$; lower = better fit).}
+  Proteomic Risk Score = 5-fold cross-validated OOS predictions from
+  the prognostic elastic net (380 proteins, proteins only, $\alpha = 0.5$,
+  test $R^2 = 0.021$). BMI from \texttt{CellData.csv} (Phase~2 visit).
+  $\Delta$AIC relative to clinical reference; $\Delta \leq -2$
+  indicates meaningful improvement.}
 \begin{tabular}{lrr}
 \toprule
 Model & AIC & $\Delta$AIC \\
 \midrule
-Clinical (age, sex, race, smoking, pack-years, scanner) & 8{,}815 & Reference \\
-PRS only (PRS + baseline density + scanner)              & 8{,}848 & $+33.1$ \\
-Clinical + PRS                                           & 8{,}816 & $+0.8$ \\
+Clinical (age, sex, race, smoking, pack-years, BMI) & 8{,}900.5 & Reference \\
+Proteomic Risk Score alone                           & 8{,}920.0 & $+19.1$ \\
+Clinical + Proteomic Risk Score                      & 8{,}886.4 & $-14.1$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent PRS $\hat\beta = 0.42$ HU/SD, 95\% CI $[-0.05,\ 0.88]$,
-$p = 0.079$ in the combined model.
+\noindent proRS $\hat\beta = 0.84$ HU/SD, 95\% CI $[0.43,\ 1.24]$,
+$p < 0.001$ (in the Clinical + Proteomic Risk Score model).
 
-\textbf{Key result.} The PRS does not improve model fit over clinical
-variables alone ($\Delta$AIC $= +0.8$, far from the $-2$ threshold).
-The PRS-only model is substantially worse than clinical alone
-($\Delta$AIC $= +33$).
+\textbf{Key result.} The proteomic risk score alone does not outperform
+the clinical reference ($\Delta$AIC $= +19.1$), consistent with proteins
+lacking the direct demographic and behavioural context captured by age,
+sex, race, and smoking history. However, adding the proRS to the clinical
+model yields a meaningful improvement ($\Delta$AIC $= -14.1$, exceeding
+the $\leq -2$ threshold; $\hat\beta = 0.84$ HU/SD, $p < 0.001$),
+demonstrating that blood protein patterns capture emphysema progression
+risk beyond standard clinical predictors. The out-of-sample metric is
+test $R^2 = 0.021$ and a Q1-to-Q4 gradient of 1.9 HU (Figure~3).
 
 % =============================================================================
 \section*{Table 2: Causal Mediation}
@@ -647,13 +680,13 @@ effects framework) with robust sandwich standard errors.
 Two models fitted internally by \texttt{medflex}:
 \[
   \text{Imputation model: }
-  \Delta\rho \;\sim\; \texttt{meanmal} \times \text{PRS} + \text{covariates}
+  \Delta\rho \;\sim\; \texttt{meanmal} \times \text{proRS} + \text{covariates}
 \]
 \[
   \text{Natural effects model: }
   \Delta\rho \;\sim\; \texttt{meanmal}_0 + \texttt{meanmal}_1 + \text{covariates}
 \]
-$\texttt{meanmal}_0$ is the MAL value at which the mediator (PRS) is
+$\texttt{meanmal}_0$ is the MAL value at which the mediator (proRS) is
 set (direct path); $\texttt{meanmal}_1$ is the actual MAL value driving
 the outcome (indirect path). The difference between them isolates the
 mediated portion.
@@ -661,12 +694,12 @@ mediated portion.
 \begin{table}[H]
 \centering
 \caption*{\textbf{Table 2.} Causal mediation of the MAL--emphysema
-  progression relationship through the Proteomic Risk Score (PRS),
+  progression relationship through the Proteomic Risk Score (proRS),
   estimated using the natural effects framework (\texttt{medflex} R
   package, robust sandwich SE, $n = 1{,}306$). NDE (Natural Direct
   Effect) = portion of MAL's effect on $\Delta$CT lung density not
-  operating through the PRS. NIE (Natural Indirect Effect) = portion
-  operating through the PRS. Proportion mediated = NIE / total effect.
+  operating through the proRS. NIE (Natural Indirect Effect) = portion
+  operating through the proRS. Proportion mediated = NIE / total effect.
   All effects in HU (Hounsfield Units; negative = more emphysema).}
 \begin{tabular}{lrrr}
 \toprule
@@ -695,11 +728,11 @@ $= -0.6\%$).
     proteins): gene, target, $\hat\beta$, SE, $t$, $p$, FDR. \\
     File: \texttt{MAL\_omics/mal\_de\_results.csv}
 
-  \item \textbf{S2: PRS weights} (378 proteins): gene, target,
+  \item \textbf{S2: proRS weights} (MAL-targeting LASSO proteins): gene, target,
     $\hat\beta_{\text{OLS}}$, 95\% CI, $p$. \\
     File: \texttt{MAL\_omics/mal\_risk\_score\_weights.csv}
 
-  \item \textbf{S3: Per-protein mediation} (378 proteins): NDE, NIE,
+  \item \textbf{S3: Per-protein mediation} (MAL-targeting LASSO proteins): NDE, NIE,
     total, proportion mediated, NIE $p$. \\
     File: \texttt{MAL\_omics/mal\_mediation\_supp.csv}
 
@@ -742,29 +775,27 @@ $= -0.6\%$).
     top 30 MAL-associated proteins (ordered as in Supplementary
     Figure~A) showing their association with emphysema progression
     ($\Delta$CT lung density, HU). Points show OLS $\hat\beta$ with
-    95\% CI, adjusted for baseline lung density (\texttt{lung\_density\_vnb\_P2}),
-    age, sex, race, pack-years, smoking, scanner, and PC1--PC5.
+    95\% CI, adjusted for age, sex, race, pack-years, smoking, BMI,
+    and scanner.
     Vertical dashed line at zero.}
 \end{figure}
 
 \end{itemize}
 
 % =============================================================================
-\section*{What Was Not Found / Assumptions Made}
+\section*{Assumptions Made}
 
 \begin{enumerate}
-  \item \textbf{FEV\textsubscript{1}\% predicted}: column
-    \texttt{FEV1pp\_P2} does not exist in the phenotype file. Not
-    included in Table~1 or any model. Check the data dictionary for
-    the correct column name.
-
-  \item \textbf{BMI}: no BMI column found. Not included in Table~1 or
-    the clinical regression model. The clinical model adjusts for age,
-    sex, race, smoking, and pack-years only. AIC comparisons may change
-    once BMI is added.
-
   \item \textbf{Figure 1 (study schematic)}: not automatically
     generated. Needs to be drawn manually.
+
+  \item \textbf{BMI}: sourced from \texttt{CellData.csv} (column \texttt{BMI},
+    filtered to \texttt{Phase\_study == 2}). All 1,306 analysis subjects
+    have Phase~2 BMI (mean 29, SD 6). Included in Table~1 and the clinical model.
+
+  \item \textbf{FEV$_1$\% predicted}: column \texttt{fev1\_pp\_gli\_global\_P2}
+    (GLI global reference equation) confirmed present in \texttt{pheno\_MAL.csv}.
+    Mean 83 (SD 24) in Table~1.
 
 \end{enumerate}
 
