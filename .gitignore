@@ -16,6 +16,7 @@ report/*.fls
 report/*.log
 report/*.out
 report/*.synctex.gz
+report/*.docx
 
 # -----------------------------------------------------------------------------
 # HTML — ignore globally except notebook report
