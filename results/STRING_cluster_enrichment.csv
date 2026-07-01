@@ -1,0 +1,4 @@
+category,term,number_of_genes,number_of_genes_in_background,ncbiTaxonId,inputGenes,preferredNames,p_value,fdr,description,cluster
+PMID,PMID:33472398,3,20,9606,"9606.ENSP00000222271,9606.ENSP00000255030,9606.ENSP00000364210","COMP,CRP,AGER",1.42e-9,0.0059,(2021) COMP (Cartilage Oligomeric Matrix Protein) Neoepitope: A Novel Biomarker to Identify Symptomatic Carotid Stenosis.,1
+PMID,PMID:24534711,3,27,9606,"9606.ENSP00000222271,9606.ENSP00000255030,9606.ENSP00000364210","COMP,CRP,AGER",3.25e-9,0.0067,(2014) Republished: Value of biomarkers in osteoarthritis: current status and perspectives.,1
+PMID,PMID:23897772,3,27,9606,"9606.ENSP00000222271,9606.ENSP00000255030,9606.ENSP00000364210","COMP,CRP,AGER",3.25e-9,0.0067,(2013) Value of biomarkers in osteoarthritis: current status and perspectives.,1
