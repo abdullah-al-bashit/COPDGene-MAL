@@ -25,7 +25,7 @@ SomaScan aptamer-based platform (~4,979 proteins), n = 1,306 subjects with compl
 Journal/
 ├── MAL_omics_proteomics.ipynb    ← main analysis notebook (R, ir-vscode kernel)
 ├── MAL_omics_proteomics.html     ← rendered notebook report
-├── manuscript/
+├── report/
 │   ├── MAL_omics_manuscript.tex  ← LaTeX source
 │   ├── MAL_omics_manuscript.pdf  ← compiled manuscript
 │   └── MAL_omics_manuscript.docx ← Word export
@@ -56,7 +56,7 @@ IRkernel::installspec(name = "ir-vscode", displayname = "R VS Code")
 ## Compiling the Manuscript
 
 ```bash
-cd manuscript
+cd report
 latexmk -pdf MAL_omics_manuscript.tex
 pandoc MAL_omics_manuscript.tex -o MAL_omics_manuscript.docx
 ```

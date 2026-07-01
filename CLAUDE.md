@@ -16,7 +16,7 @@ Journal/
 ├── CLAUDE.md
 ├── MAL_omics_proteomics.ipynb    ← main analysis notebook (ir-vscode kernel)
 ├── MAL_omics_proteomics.html     ← rendered notebook report
-├── manuscript/                   ← MAL_omics_manuscript.tex/.pdf/.docx
+├── report/                   ← MAL_omics_manuscript.tex/.pdf/.docx
 ├── data/                         ← PHI/HIPAA — gitignored
 ├── figures/                      ← generated PDF/PNG — gitignored
 ├── results/                      ← generated CSVs — gitignored
@@ -65,15 +65,15 @@ STRING_DIR <- file.path(BASE, "string_data")
 ## Compiling the Manuscript
 
 ```bash
-cd manuscript
+cd report
 latexmk -pdf MAL_omics_manuscript.tex
 ```
 
-Figures resolve via `\graphicspath{{../figures/}}` — always compile from `manuscript/`.
+Figures resolve via `\graphicspath{{../figures/}}` — always compile from `report/`.
 
 Generate DOCX:
 ```bash
-cd manuscript
+cd report
 pandoc MAL_omics_manuscript.tex -o MAL_omics_manuscript.docx
 ```
 

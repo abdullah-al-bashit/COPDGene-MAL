@@ -10,12 +10,12 @@ data/
 # -----------------------------------------------------------------------------
 # MANUSCRIPT — track source + PDF + DOCX, ignore LaTeX aux files
 # -----------------------------------------------------------------------------
-manuscript/*.aux
-manuscript/*.fdb_latexmk
-manuscript/*.fls
-manuscript/*.log
-manuscript/*.out
-manuscript/*.synctex.gz
+report/*.aux
+report/*.fdb_latexmk
+report/*.fls
+report/*.log
+report/*.out
+report/*.synctex.gz
 
 # -----------------------------------------------------------------------------
 # HTML — ignore globally except notebook report
