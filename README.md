@@ -28,7 +28,6 @@ Journal/
 ├── report/
 │   ├── MAL_omics_manuscript.tex  ← LaTeX source
 │   ├── MAL_omics_manuscript.pdf  ← compiled manuscript
-│   └── MAL_omics_manuscript.docx ← Word export
 ├── data/                         ← PHI/HIPAA — gitignored
 ├── figures/                      ← generated figures — gitignored
 ├── results/                      ← generated CSVs — gitignored
