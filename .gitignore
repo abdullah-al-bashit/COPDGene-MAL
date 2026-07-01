@@ -8,27 +8,27 @@
 data/
 
 # -----------------------------------------------------------------------------
-# MAL OMICS GENERATED OUTPUTS — reproducible from notebook
+# GENERATED OUTPUTS — reproducible from notebook
 # -----------------------------------------------------------------------------
-MAL_omics/*.csv
-MAL_omics/*.pdf
-MAL_omics/*.png
-MAL_omics/*.html
-MAL_omics/*.sqlite
-MAL_omics/*.txt.gz
-# Keep manuscript files tracked (not generated analysis outputs)
-!MAL_omics/*.tex
-!MAL_omics/MAL_omics_manuscript.pdf
+figures/
+results/
+string_data/
 
 # -----------------------------------------------------------------------------
-# GENERATED OUTPUTS — reproducible from source, no need to track
+# MANUSCRIPT — track source + PDF + DOCX, ignore LaTeX aux files
+# -----------------------------------------------------------------------------
+manuscript/*.aux
+manuscript/*.fdb_latexmk
+manuscript/*.fls
+manuscript/*.log
+manuscript/*.out
+manuscript/*.synctex.gz
+
+# -----------------------------------------------------------------------------
+# HTML — ignore globally except notebook report
 # -----------------------------------------------------------------------------
 *.html
-Aim2_prediction/Aim2_model_comparison.csv
-Aim2_prediction/Aim2_lasso_coefs_m1.csv
-Aim2_prediction/Aim2_lasso_coefs_m2.csv
-Aim2_prediction/Aim2_proteomic_risk_score.csv
-Aim2_prediction/Aim2_PRS_progression_association.csv
+!MAL_omics_proteomics.html
 
 # -----------------------------------------------------------------------------
 # R ARTIFACTS

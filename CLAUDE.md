@@ -9,86 +9,99 @@ COPDGene multi-omics analysis studying Mechanically Affected Lung (MAL) and emph
 **MAL** = Mechanically Affected Lung: CT-derived continuous score (0.01–0.40) measuring lung volume under destructive mechanical stress.  
 **Outcome** = `Change_lung_density_vnb_P2_P3` (HU): Phase 3 − Phase 2 CT density. Negative = emphysema progressed.
 
+## Directory Structure
+
+```
+Journal/
+├── CLAUDE.md
+├── MAL_omics_proteomics.ipynb    ← main analysis notebook (ir-vscode kernel)
+├── MAL_omics_proteomics.html     ← rendered notebook report
+├── manuscript/                   ← MAL_omics_manuscript.tex/.pdf/.docx
+├── data/                         ← PHI/HIPAA — gitignored
+├── figures/                      ← generated PDF/PNG — gitignored
+├── results/                      ← generated CSVs — gitignored
+└── string_data/                  ← STRING database gz files — gitignored
+```
+
 ## Data (never commit — PHI/HIPAA)
 
-All raw data lives in `data/` which is fully gitignored.
+Lives in `data/` — gitignored.
 
 | File | Contents |
 |------|----------|
-| `data/csv_exports/prot.csv` | SomaScan RFU protein abundance (~5k proteins × 5,670 subjects) |
-| `data/csv_exports/pheno_MAL.csv` | Phenotypes, covariates, outcomes |
-| `data/csv_exports/metadat5k.csv` | Protein annotations (seqID, EntrezGeneSymbol, Target, UniProt) |
-| `data/Data/MAL.csv` | MAL scores (sid, meanmal) |
+| `prot.csv` | SomaScan RFU (~5k proteins × 5,670 subjects) |
+| `pheno_MAL.csv` | Phenotypes, covariates, outcomes |
+| `metadat5k.csv` | Protein annotations (seqID, EntrezGeneSymbol, Target) |
+| `MAL.csv` | MAL scores (sid, meanmal, pctprog, pcthighmal) |
+| `CellData.csv` | BMI and comorbidity data (Phase 2) |
 
-Key phenotype columns: `sid`, `Change_lung_density_vnb_P2_P3`, `lung_density_vnb_P2`, `meanmal`, `Age_P2`, `gender`, `race`, `ATS_PackYears_P2`, `SmokCigNow_P2`, `scanner_model_clean_P2`, `PC1`–`PC5`.
+Key columns: `sid`, `Change_lung_density_vnb_P2_P3`, `lung_density_vnb_P2`, `meanmal`, `Age_P2`, `gender`, `race`, `ATS_PackYears_P2`, `SmokCigNow_P2`, `scanner_model_clean_P2`, `PC1`–`PC5`.
 
-Protein columns follow the pattern `X{seqID}` (raw) → `log2_X{seqID}` (after log2 transformation). Join to metadata on `seqID = sub("^log2_X", "", predictor)`.
+Protein columns: `X{seqID}` (raw RFU) → `log2_X{seqID}` (after log2 transform). Join metadata on `seqID = sub("^log2_X", "", predictor)`.
 
-## Running Analyses
+## Running the Notebook
 
-```bash
-# Execute a single notebook and produce HTML report alongside it
-bash run_analysis.sh Aim2_prediction/Aim2_prediction_adaptive_lasso.ipynb
-
-# Execute all registered analyses
-bash run_analysis.sh
-```
-
-To execute a notebook and save outputs back into the `.ipynb` (for GitHub rendering):
+From `Journal/` root (so `here::here()` resolves correctly):
 ```bash
 /Applications/JupyterLab.app/Contents/Resources/jlab_server/bin/jupyter nbconvert \
   --to notebook --execute --inplace \
   --ExecutePreprocessor.kernel_name=ir-vscode \
-  --ExecutePreprocessor.timeout=3600 \
-  path/to/notebook.ipynb
+  --ExecutePreprocessor.timeout=7200 \
+  MAL_omics_proteomics.ipynb
 ```
 
-## R Kernel
+R kernel: `ir-vscode` (registered via `IRkernel::installspec(name="ir-vscode", displayname="R VS Code")`).
 
-Notebooks use the `ir-vscode` kernel (IRkernel registered via `IRkernel::installspec(name="ir-vscode", displayname="R VS Code")`). Always specify `--ExecutePreprocessor.kernel_name=ir-vscode` when running via nbconvert.
+## Notebook Path Variables (cell 2, setup)
 
-## Adding a New Analysis
+```r
+BASE       <- here::here()           # Journal/
+DATA_DIR   <- file.path(BASE, "data")
+FIG_DIR    <- file.path(BASE, "figures")
+RES_DIR    <- file.path(BASE, "results")
+STRING_DIR <- file.path(BASE, "string_data")
+```
 
-1. Create a new directory under `Journal/` (e.g. `MAL_omics/`)
-2. Build the analysis as a `.ipynb` notebook with the `ir-vscode` kernel
-3. Register it in `run_analysis.sh` under the "SCRIPTS TO RUN" section:
-   ```bash
-   render_notebook "MAL_omics/analysis.ipynb"
-   ```
-4. Add generated output files (CSVs, HTML) to `.gitignore`
+## Compiling the Manuscript
+
+```bash
+cd manuscript
+latexmk -pdf MAL_omics_manuscript.tex
+```
+
+Figures resolve via `\graphicspath{{../figures/}}` — always compile from `manuscript/`.
+
+Generate DOCX:
+```bash
+cd manuscript
+pandoc MAL_omics_manuscript.tex -o MAL_omics_manuscript.docx
+```
 
 ## Statistical Conventions
 
-- **Log2-transform** all SomaScan RFU values before modelling (`log2(pmax(x, 1e-6))`)
+- **Log2-transform** all SomaScan RFU values before modelling: `log2(pmax(x, 1e-6))`
 - **Adaptive lasso**: ridge pre-step on residualised outcome → weights `wⱼ = 1/|β̂_ridge_j|` → cv.glmnet with `alpha=1, penalty.factor=wⱼ`
 - **Covariates always unpenalized**: `penalty.factor=0` for `lung_density_vnb_P2`, `Age_P2`, `gender`, `race`, `ATS_PackYears_P2`, `SmokCigNow_P2`, `scanner_model_clean_P2`, `PC1`–`PC5`
-- **Design matrix alignment**: when splitting data, use `ref_colnames` parameter in `build_design()` to zero-fill missing factor-level dummy columns in val/test splits
-- **Post-selection OLS**: after lasso selects proteins, refit OLS on selected set for unbiased β, SE, CI, p-values
-- **AIC comparison**: improvement of ≥ 2 units (lower) is considered meaningful
-- **AUC**: use `pROC::roc(..., direction="auto")` — never hardcode direction
+- **Design matrix alignment**: use `ref_colnames` in `build_design()` to zero-fill missing factor-level dummy columns in val/test splits
+- **Post-selection OLS**: refit OLS on lasso-selected proteins for unbiased β, SE, CI, p-values
+- **AIC**: improvement of ≥ 2 units (lower) is meaningful
+- **Seeds**: `set.seed(42)` before the 70/30 split AND before `fit_adaptive_lasso()`
 
-## Existing Analyses
+## MAL Omics Analysis Pipeline
 
-### `MAL_omics/MAL_omics_proteomics.ipynb`
-Full MAL omics paper pipeline. Analyses in order:
+`MAL_omics_proteomics.ipynb` — 38 cells, n = 1,306 subjects:
+
 1. **Table 1** — `gtsummary::tbl_summary()`
-2. **Differential expression** — `run_protein_lm()` loop over ~4,979 proteins; BH FDR
-3. **GSEA** — `fgsea` + `msigdbr`; Hallmark, KEGG, Reactome; ranked by t-statistic
-4. **STRING network** — `STRINGdb` on FDR < 0.05 proteins
-5. **Adaptive LASSO → MAL risk score** — same framework as Aim2 prediction; outcome = `meanmal`; 70/30 split
-6. **Risk score ~ emphysema progression** — 3-model AIC comparison (clinical / PRS / combined); improvement ≥ −2 is meaningful
-7. **Causal mediation** — `medflex::neImpute()` + `neModel()`; MAL → PRS → progression; NIE/NDE/proportion mediated
-8. **Figures** — volcano (2A), GSEA barplot (2B), STRING network (2C), quartile plot (3), supplement forest plots
+2. **Differential expression** — `run_protein_lm()` over 4,979 proteins; BH FDR; 14 significant
+3. **Sensitivity** — DE re-run adjusting for CAD/CHF; all 14 proteins robust
+4. **GSEA** — `fgsea` + `msigdbr`; Hallmark, KEGG, Reactome; 11 significant pathways
+5. **STRING network** — `STRINGdb` v11.5 on 14 proteins; `input_directory = STRING_DIR`
+6. **MCL clustering** — 2 clusters with n ≥ 3
+7. **Adaptive LASSO → proRS** — outcome = `meanmal`; 572 proteins; test R² = 0.233; `set.seed(42)` before split AND lasso fit
+8. **AIC comparison** — M1 clinical / M2 proRS+scanner / M3 clinical+proRS; M3 DAIC = -13.5
+9. **Figure 3** — decile dot plot; D10/D1 = 3.1x, p < 0.001
+10. **Causal mediation** — `medflex`; MAL → proRS → progression; NDE = -0.55 (p = 0.941), NIE = 13.93 (p = 0.002); complete mediation
+11. **Per-protein mediation** — 572 proteins; 199 converged; 10 with NIE p < 0.05
+12. **Save outputs** — CSV to `RES_DIR`, figures to `FIG_DIR`
 
-Outputs gitignored (`MAL_omics/*.csv/pdf/png/html`)
-
-
-
-### `Aim2_prediction/Aim2_prediction_adaptive_lasso.ipynb`
-Predicts emphysema progression from proteomics. Two models: with and without MAL. Key finding: MAL does not improve prediction over proteomics alone (AIC favours Model 1); 287/316 proteins are shared between models; 29 proteins unique to Model 1 were capturing MAL-related signal.
-
-Outputs (gitignored, regenerated on each run):
-- `Aim2_model_comparison.csv` — AUC, MSE, AIC per model
-- `Aim2_lasso_coefs_m1/m2.csv` — selected proteins with β, SE, CI, p
-- `Aim2_proteomic_risk_score.csv` — per-subject PRS with split membership
-- `Aim2_PRS_progression_association.csv` — lm() table for PRS → progression
+Key result numbers: 572 proteins, R² = 0.233, M3 DAIC = -13.5, NIE = 13.93 HU (p = 0.002).

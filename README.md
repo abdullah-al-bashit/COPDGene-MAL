@@ -1,88 +1,74 @@
-# COPDGene Multi-omics: MAL and Emphysema Progression
+# COPDGene MAL Omics: Proteomics Analysis
 
-## Project Structure
+Plasma proteomics study of Mechanically Affected Lung (MAL) and emphysema progression in COPDGene.
+SomaScan aptamer-based platform (~4,979 proteins), n = 1,306 subjects with complete Phase 2 proteomics, phenotype, and MAL data.
+
+## Overview
+
+**MAL** (Mechanically Affected Lung) is a CT-derived continuous score (0.01–0.40) measuring the fraction of lung volume under destructive mechanical stress. This analysis asks: does mechanical lung stress leave a detectable signal in blood proteomics, and can that signal predict who will develop worse emphysema?
+
+**Outcome:** CT lung density change Phase 3 − Phase 2 (HU). Negative = emphysema progressed.
+
+## Key Results
+
+| Analysis | Result |
+|---|---|
+| Differential expression | 14 of 4,979 proteins associated with MAL (FDR < 0.05) |
+| GSEA | 11 significant pathways; depleted metabolic, enriched inflammatory |
+| Proteomic Risk Score (proRS) | 572-protein adaptive LASSO; test R² = 0.233 |
+| AIC improvement (M3 vs M1) | ΔAIC = −13.5 |
+| Causal mediation | NIE = 13.93 HU (p = 0.002); complete mediation |
+
+## Repository Structure
 
 ```
 Journal/
-├── run_analysis.sh                              # run all analyses and generate HTML reports
-├── data/
-│   ├── Data/MAL.csv                             # MAL scores (meanmal)
-│   └── csv_exports/
-│       ├── prot.csv                             # SomaScan protein abundance
-│       ├── pheno_MAL.csv                        # phenotypes and covariates
-│       └── metadat5k.csv                        # protein annotations
-└── Aim2_prediction/
-    ├── Aim2_prediction_adaptive_lasso.ipynb     # adaptive lasso notebook (main analysis)
-    └── Aim2_prediction_adaptive_lasso.html      # generated report (after running)
+├── MAL_omics_proteomics.ipynb    ← main analysis notebook (R, ir-vscode kernel)
+├── MAL_omics_proteomics.html     ← rendered notebook report
+├── manuscript/
+│   ├── MAL_omics_manuscript.tex  ← LaTeX source
+│   ├── MAL_omics_manuscript.pdf  ← compiled manuscript
+│   └── MAL_omics_manuscript.docx ← Word export
+├── data/                         ← PHI/HIPAA — gitignored
+├── figures/                      ← generated figures — gitignored
+├── results/                      ← generated CSVs — gitignored
+└── string_data/                  ← STRING database cache — gitignored
 ```
 
----
+## Running the Analysis
 
-## One-Time Setup
-
-### 1. Install R
-
-Download from https://cran.r-project.org/ then verify:
+From the `Journal/` root:
 
 ```bash
-R --version
+/Applications/JupyterLab.app/Contents/Resources/jlab_server/bin/jupyter nbconvert \
+  --to notebook --execute --inplace \
+  --ExecutePreprocessor.kernel_name=ir-vscode \
+  --ExecutePreprocessor.timeout=7200 \
+  MAL_omics_proteomics.ipynb
 ```
 
-### 2. Install VS Code Extensions
-
-```bash
-code --install-extension ms-toolsai.jupyter
-code --install-extension reditorsupport.r
-```
-
-### 3. Register the R Kernel for Notebooks
-
-Open R and run:
+R kernel registration (one-time):
 
 ```r
-install.packages("IRkernel")
 IRkernel::installspec(name = "ir-vscode", displayname = "R VS Code")
 ```
 
-### 4. Install Required R Packages
-
-```r
-install.packages(c("glmnet", "pROC", "dplyr", "tibble", "readr", "here"))
-```
-
----
-
-## Running Analyses
-
-All analyses are run through `run_analysis.sh` from the `Journal/` folder.
-
-### Run everything
+## Compiling the Manuscript
 
 ```bash
-bash run_analysis.sh
+cd manuscript
+latexmk -pdf MAL_omics_manuscript.tex
+pandoc MAL_omics_manuscript.tex -o MAL_omics_manuscript.docx
 ```
 
-Executes all registered notebooks and writes an HTML report next to each source file.
+## Data
 
-### Run a single notebook
+Patient-level data lives in `data/` (gitignored; PHI/HIPAA).
 
-```bash
-bash run_analysis.sh Aim2_prediction/Aim2_prediction_adaptive_lasso.ipynb
-```
-
-### Add a new analysis
-
-Open `run_analysis.sh` and add one line in the "SCRIPTS TO RUN" section:
-
-```bash
-render_notebook "NewProject/analysis.ipynb"   # for a notebook
-render_rscript  "NewProject/model.R"           # for an R script
-```
-
-The HTML output is always placed next to the source file automatically.
-
----
-
-## Working in VS Code
-
-Open a notebook in VS Code, select the `R VS Code` kernel in the top-right picker, and run cells interactively. Use `Option+K` to open the Claude Code inline edit prompt inside a cell.
+| File | Contents |
+|---|---|
+| `prot.csv` | SomaScan RFU (~4,979 proteins × 5,670 subjects) |
+| `pheno_MAL.csv` | Phenotypes, covariates, outcomes |
+| `metadat5k.csv` | Protein annotations (seqID, gene symbol, target name) |
+| `MAL.csv` | MAL scores (sid, meanmal) |
+| `CellData.csv` | BMI and comorbidity data (Phase 2) |
